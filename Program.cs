@@ -8,5 +8,3 @@ app.MapOpenApi();
 
 
 app.Run();
-
-
