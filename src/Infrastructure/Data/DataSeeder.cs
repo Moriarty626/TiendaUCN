@@ -21,7 +21,7 @@ namespace TiendaUCN.src.Infrastructure.Data
                 await context.Database.MigrateAsync(); // Aplica las migraciones pendientes a la base de datos
 
                 // Extraer géneros de usuario desde la configuración
-                var genders = configuration.GetSection("Serilog:User:Genders").Get<string[]>()
+                var genders = configuration.GetSection("User:Genders").Get<string[]>()
                     ?? throw new InvalidOperationException("No se pudieron cargar los géneros desde la configuración.");
 
                 // Creacion de roles
@@ -84,20 +84,20 @@ namespace TiendaUCN.src.Infrastructure.Data
                     // Crear usuario admin
                     User adminUser = new User
                     {
-                        Name = configuration["Serilog:User:AdminUser:FirstName"] + " " + configuration["Serilog:User:AdminUser:LastName"]
+                        Name = configuration["User:AdminUser:FirstName"] + " " + configuration["User:AdminUser:LastName"]
                             ?? throw new InvalidOperationException("No se pudo cargar el nombre del usuario admin."),
-                        Email = configuration["Serilog:User:AdminUser:Email"]
+                        Email = configuration["User:AdminUser:Email"]
                             ?? throw new InvalidOperationException("No se pudo cargar el email del usuario admin."),
                         EmailConfirmed = true,
-                        Rut = configuration["Serilog:User:AdminUser:Rut"]
+                        Rut = configuration["User:AdminUser:Rut"]
                             ?? throw new InvalidOperationException("No se pudo cargar el RUT del usuario admin."),
-                        PhoneNumber = configuration["Serilog:User:AdminUser:PhoneNumber"]
+                        PhoneNumber = configuration["User:AdminUser:PhoneNumber"]
                             ?? throw new InvalidOperationException("No se pudo cargar el teléfono del usuario admin."),
-                        DateOfBirth = DateTime.Parse(configuration["Serilog:User:AdminUser:BirthDate"]
+                        DateOfBirth = DateTime.Parse(configuration["User:AdminUser:BirthDate"]
                             ?? throw new InvalidOperationException("No se pudo cargar la fecha de nacimiento del usuario admin.")),
-                        Gender = configuration["Serilog:User:AdminUser:Gender"]
+                        Gender = configuration["User:AdminUser:Gender"]
                             ?? throw new InvalidOperationException("No se pudo cargar el género del usuario admin."),
-                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(configuration["Serilog:User:AdminUser:Password"]
+                        PasswordHash = BCrypt.Net.BCrypt.HashPassword(configuration["User:AdminUser:Password"]
                             ?? throw new InvalidOperationException("No se pudo cargar la contraseña del usuario admin.")),
                         RoleId = adminRole.Id
                     };
@@ -107,7 +107,7 @@ namespace TiendaUCN.src.Infrastructure.Data
                     Log.Information("Usuario admin creado con exito");
 
                     // Crear usuarios de prueba
-                    var randomPasswordHash = BCrypt.Net.BCrypt.HashPassword(configuration["Serilog:User:RandomUserPassword"]
+                    var randomPasswordHash = BCrypt.Net.BCrypt.HashPassword(configuration["User:RandomUserPassword"]
                         ?? throw new InvalidOperationException("No se pudo cargar la contraseña aleatoria."));
 
                     var userFaker = new Faker<User>()
