@@ -1,6 +1,6 @@
-﻿namespace TiendaUCN.Models;
-
+﻿namespace TiendaUCN.src.Domain.Models;
 using TiendaUCN.src.Domain.Models;
+
 
 public class User
 {

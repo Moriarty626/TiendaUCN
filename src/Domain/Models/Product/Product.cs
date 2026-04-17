@@ -25,5 +25,6 @@
         // Relaciones
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+        
     }
 }

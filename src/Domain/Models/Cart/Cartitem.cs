@@ -1,5 +1,4 @@
 ﻿using TiendaUCN.Models;
-
 namespace TiendaUCN.src.Domain.Models
 {
     public class CartItem

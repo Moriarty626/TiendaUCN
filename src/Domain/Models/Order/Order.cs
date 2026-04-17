@@ -1,6 +1,4 @@
-﻿using TiendaUCN.Models;
-
-namespace TiendaUCN.src.Domain.Models
+﻿namespace TiendaUCN.src.Domain.Models
 {
     public class Order
     {
