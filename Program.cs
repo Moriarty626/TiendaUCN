@@ -4,8 +4,7 @@ using Serilog;
 using TiendaUCN.src.Application.Services.Implements;
 using TiendaUCN.src.Application.Services.Interfaces;
 using TiendaUCN.src.Infrastructure.Data;
-using TiendaUCN.src.Infrastructure.Repositories.Implements;
-using TiendaUCN.src.Infrastructure.Repositories.Interfaces;
+
 
 
 Env.Load();
@@ -43,18 +42,21 @@ using (var scope = app.Services.CreateScope())
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+/*
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
+*/
 
 
 #region Email Service Configuration
 
 Log.Information("Configurando servicio de correo electrónico Resend");
 builder.Services.AddOptions();
+/*
 builder.Services.AddHttpClient<ResendClient>();
 builder.Services.Configure<ResendClientOptions>(o =>
 {
@@ -62,6 +64,7 @@ builder.Services.Configure<ResendClientOptions>(o =>
         ?? throw new ArgumentNullException("RESEND_API_KEY is not set");
 });
 builder.Services.AddTransient<IResend, ResendClient>();
+*/
 #endregion
 
 
