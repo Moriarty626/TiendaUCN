@@ -90,9 +90,50 @@ namespace TiendaUCN.src.Domain.Models
 
         public async Task<string> EmailVerificationAsync(EmailVerificationDTO emailVerificationDTO)
         {
-            // Implementar lógica de inicio de sesión
-            throw new NotImplementedException();
+            User? user = await _userRepository.GetByEmailAsync(emailVerificationDTO.Email);
+            if (user == null)
+            {
+                Log.Warning($"Intento de verificación fallido para el correo: {emailVerificationDTO.Email}. Usuario no encontrado.");
+                throw new InvalidOperationException("No se encontró un usuario con ese correo electrónico.");
+            }
+
+            if (user.EmailConfirmed)
+            {
+                Log.Information($"Intento de verificacion fallido: El correo {emailVerificationDTO.Email} ya ha sido verificado.");
+                return "El correo ya ha sido verificado.";
+            }
+            if (user.VerificationCodeExpiry < DateTime.UtcNow)
+            {
+                await GenerateAndSendVerificationCodeAsync(user.Id, user.Email);
+                Log.Warning($"Intento de verificación fallido para el correo: {emailVerificationDTO.Email}. Código de verificación expirado.");
+                throw new InvalidOperationException("El código de verificación ha expirado. Se ha enviado un nuevo código a tu correo electrónico.");
+            }
+
+            if (user.VerificationCode != emailVerificationDTO.VerificationCode)
+            {
+                Log.Warning($"Intento de verificación fallido para el correo: {emailVerificationDTO.Email}. Código de verificación incorrecto.");
+                throw new InvalidOperationException("El código de verificación es incorrecto. Por favor, inténtalo de nuevo.");
+            }
+
+            bool isVerified = await _userRepository.MarkEmailAsConfirmedAsync(user.Id);
+            if (!isVerified)
+            {
+                Log.Error($"Error al confirmar el correo para el usuario: {emailVerificationDTO.Email}.");
+                throw new Exception("Error al verificar el correo electrónico. Por favor, inténtalo de nuevo.");
+            }
+
+            await _emailService.SendWelcomeEmailAsync(user.Email);
+            Log.Information($"Correo verificado exitosamente para el usuario: {emailVerificationDTO.Email}.");
+
+            return "Correo verificado exitosamente. ¡Bienvenido a TiendaUCN!";
+
         }
+
+
+
+
+
+
 
         public async Task<string> LoginAsync(LoginDTO loginDTO)
         {

@@ -95,6 +95,9 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
             return true;
         }
 
-
+        public Task<bool> MarkEmailAsConfirmedAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

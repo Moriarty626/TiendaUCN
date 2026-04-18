@@ -12,5 +12,6 @@ namespace TiendaUCN.src.Domain.Models
         Task<bool> MarkEmailAsVerifiedAsync(int id);
         Task<int> DeleteUnconfirmedUsersAsync(int daysToDeleteUnverifiedAccount);
         Task<bool> SaveVerificationCodeAsync(int userId, string verificationCode, DateTime verificationCodeExpiry);
+        Task<bool> MarkEmailAsConfirmedAsync(int id);
     }
 }
