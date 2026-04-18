@@ -20,6 +20,7 @@ namespace TiendaUCN.src.Infrastructure.Data
         public DbSet<Order> Orders { get; set; } = null!;
         public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
         public DbSet<JwtBlacklist> JwtBlacklist { get; set; } = null!;
+        public DbSet<VerificationCode> VerificationCodes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,3 +1,4 @@
+
 namespace TiendaUCN.src.Domain.Models
 {
     public interface IUserRepository
@@ -10,5 +11,6 @@ namespace TiendaUCN.src.Domain.Models
         Task<User?> GetByEmailAsync(string email);
         Task<bool> MarkEmailAsVerifiedAsync(int id);
         Task<int> DeleteUnconfirmedUsersAsync(int daysToDeleteUnverifiedAccount);
+        Task<bool> SaveVerificationCodeAsync(int userId, string verificationCode, DateTime verificationCodeExpiry);
     }
 }

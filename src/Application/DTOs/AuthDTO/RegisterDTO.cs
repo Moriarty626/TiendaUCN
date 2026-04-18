@@ -45,6 +45,8 @@ namespace TiendaUCN.src.Application.DTOs.AuthDTO
         [Required(ErrorMessage = "La confirmación de contraseña es obligatoria.")]
         [Compare("Password", ErrorMessage = "Las contraseñas no coinciden.")]
         public required string ConfirmPassword { get; set; }
+
+
     }
 
 

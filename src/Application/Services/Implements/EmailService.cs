@@ -14,7 +14,7 @@ namespace TiendaUCN.src.Application.Services.Implements
             _configuration = configuration;
         }
 
-        public async Task SendEmailVerificationCodeEmailAsync(string email, string verificationCode)
+        public async Task SendVerificationCodeEmailAsync(string email, string verificationCode)
         {
             var message = new EmailMessage
             {
@@ -26,6 +26,7 @@ namespace TiendaUCN.src.Application.Services.Implements
 
             await _resend.EmailSendAsync(message);
         }
+
 
         public async Task SendWelcomeEmailAsync(string email)
         {

@@ -10,5 +10,7 @@ namespace TiendaUCN.src.Domain.Models
         Task<string> LoginAsync(LoginDTO loginDTO);
 
         Task<string> LogoutAsync(string token);
+        Task<string> ResendVerificationCodeAsync(ResendVerificationCodeDTO resendVerificationCodeDTO);
+
     }
 }
