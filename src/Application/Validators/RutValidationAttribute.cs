@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace TiendaUCN.src.Application.Validators
 {
@@ -6,47 +7,32 @@ namespace TiendaUCN.src.Application.Validators
     {
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if (value != null)
-            {
-                // Eliminar puntos y espacios del RUT
-                string rut = (string)value;
+            if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+                return ValidationResult.Success;
 
-                rut = rut.Replace(".", "").Replace(" ", "");
+            string rut = value.ToString()!.Replace(".", "").ToUpper();
 
-                // Obtenemos el número y el dígito verificador
-                int rutNumber = int.Parse(rut.Split('-')[0]);
-                char digitoVerificador = rut.Split('-')[1].ToLowerInvariant()[0];
+            if (!Regex.IsMatch(rut, @"^\d{7,8}-[0-9K]$"))
+                return new ValidationResult("Formato de RUT inválido.");
 
-                // Cálculo del dígito verificador
-                int[] coefficients = { 2, 3, 4, 5, 6, 7 };
-                int sum = 0;
-                int index = 0;
+            string[] parts = rut.Split('-');
+            if (!int.TryParse(parts[0], out int number))
+                return new ValidationResult("Cuerpo del RUT inválido.");
 
-                while (rutNumber != 0)
-                {
-                    sum += rutNumber % 10 * coefficients[index];
-                    rutNumber /= 10;
-                    index = (index + 1) % 6;
-                }
+            char dv = parts[1][0];
 
-                int result = 11 - (sum % 11);
-                char verificador;
+            if (CalculateDV(number) == dv)
+                return ValidationResult.Success;
 
-                // Verificar el dígito verificador
-                if (result == 10)
-                {
-                    verificador = 'k';
-                }
-                else
-                {
-                    verificador = result.ToString()[0];
-                }
-                if (verificador == digitoVerificador)
-                {
-                    return ValidationResult.Success;
-                }
-            }
-            return new ValidationResult("El RUT ingresado no es válido.");
+            return new ValidationResult(ErrorMessage ?? "El RUT no es válido.");
+        }
+
+        private char CalculateDV(int rut)
+        {
+            int m = 0, s = 1;
+            for (; rut != 0; rut /= 10)
+                s = (s + rut % 10 * (9 - m++ % 6)) % 11;
+            return (char)(s != 0 ? s + 47 : 75);
         }
     }
 }

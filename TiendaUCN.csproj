@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\Aplication\DTOs\" />
     <Folder Include="src\Aplication\Jobs\" />
     <Folder Include="src\Aplication\Services\" />
   </ItemGroup>

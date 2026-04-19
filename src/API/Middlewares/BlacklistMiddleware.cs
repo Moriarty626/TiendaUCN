@@ -1,12 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using TiendaUCN.src.Infrastructure.Data;
 
-namespace TiendaUCN.src.API.Middlewares
+namespace TiendaUCN.src.API.Middlewares;
+
+public class BlacklistMiddleware
 {
-    public class BlacklistMiddleware
-    {
+    private readonly RequestDelegate _next;
 
+    public BlacklistMiddleware(RequestDelegate next)
+    {
+        _next = next;
+    }
+
+    public async Task InvokeAsync(HttpContext context, DataContext dbContext)
+    {
+        var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            var isBlacklisted = await dbContext.JwtBlacklist.AnyAsync(t => t.Token == token);
+            if (isBlacklisted)
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsync("Token revocado. Por favor, inicie sesión nuevamente.");
+                return;
+            }
+        }
+
+        await _next(context);
     }
 }

@@ -1,12 +1,15 @@
 
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Resend;
 using Serilog;
+using System.Text;
 using TiendaUCN.src.API.Middlewares;
 using TiendaUCN.src.Application.Mappers;
 using TiendaUCN.src.Application.Services.Implements;
-using TiendaUCN.src.Application.Services.Interfaces; //a
+using TiendaUCN.src.Application.Services.Interfaces;
 using TiendaUCN.src.Domain.Models;
 using TiendaUCN.src.Infrastructure.Data;
 using TiendaUCN.src.Infrastructure.Data.Repository.Implements;
@@ -18,19 +21,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
-//Configuración de mapeadores
-builder.Services.AddScoped<UserMapper>();
-
-
-// Configuración de servicios y repositorios
-
-builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ITokenRepository, TokenRepository>();
-
-
 #region Logging Configuration
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)
@@ -39,28 +29,62 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 
 #region Database Configuration
 Log.Information("Configurando base de datos SQLite");
-string connectionStringDB = Environment.GetEnvironmentVariable("DATA_BASE_URL") ?? throw new ArgumentNullException("DataBase name cannot be null");
+string connectionStringDB = Environment.GetEnvironmentVariable("DATA_BASE_URL")
+    ?? throw new ArgumentNullException("DATA_BASE_URL no puede ser nulo.");
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlite(connectionStringDB));
 #endregion
 
+#region JWT Authentication Configuration
+Log.Information("Configurando autenticación JWT");
+string jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
+    ?? throw new ArgumentNullException("JWT_SECRET no puede ser nulo.");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+builder.Services.AddAuthorization();
+#endregion
+
+#region Services and Repositories
+builder.Services.AddScoped<UserMapper>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+#endregion
 
 #region Email Service Configuration
-
 Log.Information("Configurando servicio de correo electrónico Resend");
 builder.Services.AddOptions();
-
 builder.Services.AddHttpClient<ResendClient>();
 builder.Services.Configure<ResendClientOptions>(o =>
 {
     o.ApiToken = Environment.GetEnvironmentVariable("RESEND_API_KEY")
-        ?? throw new ArgumentNullException("RESEND_API_KEY is not set");
+        ?? throw new ArgumentNullException("RESEND_API_KEY no está configurado.");
 });
 builder.Services.AddTransient<IResend, ResendClient>();
-
 #endregion
 
 var app = builder.Build();
+
 app.MapOpenApi();
+
 #region Database Migration
 Log.Information("Aplicando migraciones a la base de datos");
 using (var scope = app.Services.CreateScope())
@@ -70,7 +94,9 @@ using (var scope = app.Services.CreateScope())
 }
 #endregion
 
-
-app.UseMiddleware<ExceptionHandilingMiddleware>(); //Debe ir primero que todo
+app.UseMiddleware<ExceptionHandilingMiddleware>(); // Primero: manejo de excepciones
+app.UseMiddleware<BlacklistMiddleware>();           // Segundo: validar blacklist
+app.UseAuthentication();                           // Tercero: autenticación JWT
+app.UseAuthorization();                            // Cuarto: autorización por rol
 app.MapControllers();
 app.Run();

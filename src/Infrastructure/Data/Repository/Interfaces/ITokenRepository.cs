@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
+﻿namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
 {
-    public class ITokenRepository
+    public interface ITokenRepository
     {
-
+        Task AddToBlacklistAsync(string token, DateTime expiresAt);
+        Task<bool> IsTokenBlacklistedAsync(string token);
+        Task<int> PurgeExpiredTokensAsync();
     }
 }

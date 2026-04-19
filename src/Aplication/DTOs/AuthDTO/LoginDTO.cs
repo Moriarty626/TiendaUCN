@@ -1,4 +1,4 @@
-namespace TiendaUCN.src.Application.DTOs.AuthDTO
+﻿namespace TiendaUCN.Aplication.DTOs.AuthDTO
 {
     public class LoginDTO
     {
