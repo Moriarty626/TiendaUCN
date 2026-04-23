@@ -1,11 +1,14 @@
-
 using DotNetEnv;
+using Hangfire;
+using Hangfire.Storage.SQLite;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Resend;
 using Serilog;
 using System.Text;
+using TiendaUCN.Application.Services.Implements;
+using TiendaUCN.Application.Services.Interfaces;
 using TiendaUCN.src.API.Middlewares;
 using TiendaUCN.src.Application.Mappers;
 using TiendaUCN.src.Application.Services.Implements;
@@ -73,6 +76,7 @@ builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 Log.Information("Configurando servicio de correo electrónico Resend");
 builder.Services.AddOptions();
 builder.Services.AddHttpClient<ResendClient>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.Configure<ResendClientOptions>(o =>
 {
     o.ApiToken = Environment.GetEnvironmentVariable("RESEND_API_KEY")
