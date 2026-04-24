@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TiendaUCN.src.Application.DTOs.AuthDTO;
 using TiendaUCN.src.Application.Services.Interfaces;
 using TiendaUCN.src.Domain.Models;
@@ -24,6 +25,7 @@ namespace TiendaUCN.src.API.Controllers
         }
 
         [HttpPost("logout")]
+        [Authorize(Roles = "Customer,Admin")]
         public async Task<IActionResult> Logout()
         {
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");

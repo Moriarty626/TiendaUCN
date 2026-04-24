@@ -1,7 +1,6 @@
 using Mapster;
 using Serilog;
 using TiendaUCN.src.Application.DTOs.AuthDTO;
-using TiendaUCN.src.Application.DTOs.AuthDTO;
 using TiendaUCN.src.Application.Services.Interfaces;
 
 namespace TiendaUCN.src.Domain.Models
@@ -98,7 +97,7 @@ namespace TiendaUCN.src.Domain.Models
 
         public async Task<string> LoginAsync(LoginDTO loginDTO)
         {
-            var user = await _userRepository.GetByEmailAsync(loginDTO.Email)
+            User user = await _userRepository.GetByEmailAsync(loginDTO.Email)
                 ?? throw new KeyNotFoundException("Credenciales inválidas.");
 
             if (user.IsDeleted)
@@ -114,7 +113,7 @@ namespace TiendaUCN.src.Domain.Models
                 throw new UnauthorizedAccessException("Credenciales inválidas.");
             }
 
-            var token = await _tokenService.GenerateAccessTokenAsync(user.Id, user.Role.Name);
+            var token = await _tokenService.GenerateAccessTokenAsync(user, user.Role.Name);
 
             Log.Information("Inicio de sesión exitoso para el usuario {Email}.", loginDTO.Email);
             return token;
@@ -122,9 +121,12 @@ namespace TiendaUCN.src.Domain.Models
 
         public async Task<string> LogoutAsync(string token)
         {
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrEmpty(token))
+            {
+                Log.Warning("Intento de cierre de sesión con token nulo o vacío.");
                 throw new ArgumentNullException("El token no puede ser nulo o vacío.");
-
+            }
+            
             await _tokenService.AddToBlacklistAsync(token);
 
             Log.Information("Cierre de sesión exitoso. Token añadido a la blacklist.");

@@ -1,4 +1,6 @@
-using Microsoft.EntityFrameworkCore;
+     using Microsoft.EntityFrameworkCore;
+using TiendaUCN.src.Application.Services.Implements;
+using TiendaUCN.src.Application.Services.Interfaces;
 using TiendaUCN.src.Infrastructure.Data;
 
 namespace TiendaUCN.src.API.Middlewares;
@@ -18,7 +20,7 @@ public class BlacklistMiddleware
 
         if (!string.IsNullOrEmpty(token))
         {
-            var isBlacklisted = await dbContext.JwtBlacklist.AnyAsync(t => t.Token == token);
+            var isBlacklisted = await dbContext.JwtBlacklist.AnyAsync(t => t.TokenId == token);
             if (isBlacklisted)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -26,7 +28,6 @@ public class BlacklistMiddleware
                 return;
             }
         }
-
         await _next(context);
     }
 }

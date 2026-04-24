@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TiendaUCN.Models;
+using TiendaUCN.src.Domain.Models;
 using TiendaUCN.src.Infrastructure.Data;
 
 namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
@@ -13,22 +14,16 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
             _context = context;
         }
 
-        public async Task AddToBlacklistAsync(string token, DateTime expiresAt)
+        public async Task AddToBlacklistAsync(JwtBlacklist token)
         {
-            var blacklisted = new JwtBlacklist
-            {
-                Token = token,
-                ExpiresAt = expiresAt,
-                InvalidatedAt = DateTime.UtcNow
-            };
-
-            await _context.JwtBlacklist.AddAsync(blacklisted);
+        
+            await _context.JwtBlacklist.AddAsync(token);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> IsTokenBlacklistedAsync(string token)
+        public async Task<bool> IsTokenBlacklistedAsync(string tokenId)
         {
-            return await _context.JwtBlacklist.AnyAsync(t => t.Token == token);
+            return await _context.JwtBlacklist.AnyAsync(t => t.TokenId == tokenId);
         }
 
         public async Task<int> PurgeExpiredTokensAsync()

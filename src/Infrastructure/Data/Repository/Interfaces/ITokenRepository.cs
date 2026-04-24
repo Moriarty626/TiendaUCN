@@ -1,9 +1,12 @@
-﻿namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
+﻿using TiendaUCN.src.Domain.Models;
+
+
+namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
 {
     public interface ITokenRepository
     {
-        Task AddToBlacklistAsync(string token, DateTime expiresAt);
-        Task<bool> IsTokenBlacklistedAsync(string token);
+        Task AddToBlacklistAsync(JwtBlacklist token);
+        Task<bool> IsTokenBlacklistedAsync(string tokenId);
         Task<int> PurgeExpiredTokensAsync();
     }
 }
