@@ -8,6 +8,6 @@ namespace TiendaUCN.src.Domain.Models
     public interface IImageRepository
     {
         Task<bool?> CreateImageAsync(Image image);
-        Task<bool?> DeleteImageAsync(string publicId);
+        Task<bool?> DeleteAsync(string publicId);
     }  
 }
