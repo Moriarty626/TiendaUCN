@@ -10,6 +10,7 @@ using System.Text;
 using TiendaUCN.Application.Services.Implements;
 using TiendaUCN.Application.Services.Interfaces;
 using TiendaUCN.src.API.Middlewares;
+using TiendaUCN.src.Application.DTOs.BrandDTO;
 using TiendaUCN.src.Application.Mappers;
 using TiendaUCN.src.Application.Services.Implements;
 using TiendaUCN.src.Application.Services.Interfaces;
@@ -67,9 +68,17 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<UserMapper>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IBrandService,BrandService>();
+builder.Services.AddScoped<IBrandRepository, BrandRepository>();
+//Falta agregar el servicio de producto
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+//Falta agregar el servicio de categoría
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IImageRepository, ImageRepository>();
+
 #endregion
 
 #region Email Service Configuration
