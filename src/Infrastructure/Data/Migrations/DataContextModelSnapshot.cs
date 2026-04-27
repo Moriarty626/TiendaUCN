@@ -17,32 +17,6 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
 
-            modelBuilder.Entity("TiendaUCN.Models.JwtBlacklist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("InvalidatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Token")
-                        .IsUnique();
-
-                    b.ToTable("JwtBlacklist");
-                });
-
             modelBuilder.Entity("TiendaUCN.src.Domain.Models.Brand", b =>
                 {
                     b.Property<int>("Id")
@@ -141,6 +115,32 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Images");
+                });
+
+            modelBuilder.Entity("TiendaUCN.src.Domain.Models.JwtBlacklist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("InvalidatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TokenId")
+                        .IsUnique();
+
+                    b.ToTable("JwtBlacklist");
                 });
 
             modelBuilder.Entity("TiendaUCN.src.Domain.Models.Order", b =>

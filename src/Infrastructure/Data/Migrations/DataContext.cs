@@ -170,8 +170,8 @@ namespace TiendaUCN.src.Infrastructure.Data
             modelBuilder.Entity<JwtBlacklist>(entity =>
             {
                 entity.HasKey(j => j.Id);
-                entity.Property(j => j.Token).IsRequired();
-                entity.HasIndex(j => j.Token).IsUnique();
+                entity.Property(j => j.TokenId).IsRequired();
+                entity.HasIndex(j => j.TokenId).IsUnique();
                 entity.Property(j => j.ExpiresAt).IsRequired();
                 entity.Property(j => j.InvalidatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             });

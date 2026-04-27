@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TiendaUCN.Models;
 using TiendaUCN.src.Domain.Models;
 using TiendaUCN.src.Infrastructure.Data;
 

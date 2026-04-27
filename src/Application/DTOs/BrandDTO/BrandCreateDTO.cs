@@ -1,4 +1,4 @@
-﻿namespace TiendaUCN.Application.DTOs.BrandDTO;
+﻿namespace TiendaUCN.src.Application.DTOs.BrandDTO;
 
 public class BrandCreateDTO
 {

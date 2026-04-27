@@ -1,4 +1,4 @@
-﻿namespace TiendaUCN.Application.DTOs.CategoryDTO;
+﻿namespace TiendaUCN.src.Application.DTOs.BrandDTO;
 
 public class BrandResponseDTO
 {
