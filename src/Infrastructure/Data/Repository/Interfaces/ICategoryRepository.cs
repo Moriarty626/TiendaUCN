@@ -12,7 +12,7 @@ namespace TiendaUCN.src.Domain.Models
         Task<bool> ExistsIdAsync(int id);
         Task<bool> UpdateNameAsync(int id, string name);
         Task<bool> UpdateDescriptionAsync(int id, string description);
-        Task<bool> DeleteBrandAsync(int id);
-        Task<int> GetBrandIdByNameAsync(string name);
+        Task<bool> DeleteAsync(int id);
+        Task<int> GetIdByNameAsync(string name);
     }
 }
