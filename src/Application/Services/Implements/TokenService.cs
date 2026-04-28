@@ -25,29 +25,42 @@ namespace TiendaUCN.src.Application.Services.Implements
             _jwtExpirationMinutes = configuration.GetValue<int>("Jwt:ExpirationMinutes", 60);
         }
 
-        public Task<string> GenerateAccessTokenAsync(User userId, string roleName)
+        public string GenerateAccessTokenAsync(User userId, string roleName)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecret));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
+            try
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId.Id.ToString()),
-                new Claim(ClaimTypes.Role, roleName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat,
-                    DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
-                    ClaimValueTypes.Integer64)
-            };
+                var claims = new List<Claim>
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, userId.Id.ToString()),
+                    new Claim(ClaimTypes.Role, roleName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Iat,
+                        DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                        ClaimValueTypes.Integer64)
+                };
+                var secretBytes = Encoding.UTF8.GetBytes(_jwtSecret);
+                Log.Information("JWT Secret size: {SecretSize} bits", secretBytes.Length * 8);
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_jwtExpirationMinutes),
-                signingCredentials: credentials
-            );
+                var key = new SymmetricSecurityKey(secretBytes);
+                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            Log.Information("Token generado para el usuario {UserId}", userId.Id);    
-            return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
+                var token = new JwtSecurityToken(
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddMinutes(_jwtExpirationMinutes),
+                    signingCredentials: credentials
+                );
+
+                Log.Information("Token JWT generado exitosamente para el usuario {UserId}", userId.Id);
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+            catch (Exception ex)
+
+            {
+                Log.Error(ex, "Error al generar el token para el usuario {UserId}", userId.Id);
+                throw new InvalidOperationException("No se pudo generar el token de acceso.");
+            }
+
+        
         }
 
         public async Task AddToBlacklistAsync(string token)
@@ -87,6 +100,14 @@ namespace TiendaUCN.src.Application.Services.Implements
            }
            Log.Warning("El token proporcionado no contiene un claim 'jti' válido para verificar en la blacklist.");
            throw new InvalidOperationException("El token no contiene un 'jti' válido");
+        }
+
+        public async Task<int> DeleteExpiredTokensInBlacklistAsync()
+        {
+            int deletedCount = await _tokenRepository.PurgeExpiredTokensAsync();
+            Log.Information("Tokens expirados eliminados de la blacklist: {DeletedCount}", deletedCount);
+            return deletedCount;
+        
         }
     }
 }

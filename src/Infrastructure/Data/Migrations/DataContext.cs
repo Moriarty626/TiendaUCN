@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TiendaUCN.Models;
+
 using TiendaUCN.src.Domain.Models;
 
 namespace TiendaUCN.src.Infrastructure.Data
@@ -102,8 +102,8 @@ namespace TiendaUCN.src.Infrastructure.Data
 
                 // Image → Product (1:1)
                 entity.HasOne(i => i.Product)
-                    .WithOne(p => p.Image)
-                    .HasForeignKey<Image>(i => i.ProductId)
+                    .WithMany(p => p.Images)
+                    .HasForeignKey(i => i.ProductId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

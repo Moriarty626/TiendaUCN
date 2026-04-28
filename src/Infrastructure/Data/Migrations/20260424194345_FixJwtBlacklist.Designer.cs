@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TiendaUCN.src.Infrastructure.Data;
 
@@ -10,9 +11,11 @@ using TiendaUCN.src.Infrastructure.Data;
 namespace TiendaUCN.src.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260424194345_FixJwtBlacklist")]
+    partial class FixJwtBlacklist
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
@@ -23,10 +26,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("DeletedAt")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
@@ -76,10 +76,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("DeletedAt")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
@@ -117,7 +114,8 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.ToTable("Images");
                 });
@@ -229,8 +227,8 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<bool>("DeletedAt")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -402,8 +400,8 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
             modelBuilder.Entity("TiendaUCN.src.Domain.Models.Image", b =>
                 {
                     b.HasOne("TiendaUCN.src.Domain.Models.Product", "Product")
-                        .WithMany("Images")
-                        .HasForeignKey("ProductId")
+                        .WithOne("Image")
+                        .HasForeignKey("TiendaUCN.src.Domain.Models.Image", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -489,7 +487,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
                 {
                     b.Navigation("CartItems");
 
-                    b.Navigation("Images");
+                    b.Navigation("Image");
 
                     b.Navigation("OrderDetails");
                 });

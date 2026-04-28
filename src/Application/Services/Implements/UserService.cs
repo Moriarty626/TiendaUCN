@@ -113,7 +113,7 @@ namespace TiendaUCN.src.Domain.Models
                 throw new UnauthorizedAccessException("Credenciales inválidas.");
             }
 
-            var token = await _tokenService.GenerateAccessTokenAsync(user, user.Role.Name);
+            var token = _tokenService.GenerateAccessTokenAsync(user, user.Role.Name);
 
             Log.Information("Inicio de sesión exitoso para el usuario {Email}.", loginDTO.Email);
             return token;

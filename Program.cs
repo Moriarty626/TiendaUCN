@@ -73,8 +73,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IBrandService,BrandService>();
 builder.Services.AddScoped<IBrandRepository, BrandRepository>();
-//Falta agregar el servicio de producto
+builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
 //Falta agregar el servicio de categoría
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();

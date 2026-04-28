@@ -1,7 +1,7 @@
 ﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using TiendaUCN.Models;
+
 using TiendaUCN.src.Domain.Models;
 using TiendaUCN.src.Infrastructure.Data;
 
@@ -145,7 +145,7 @@ namespace TiendaUCN.src.Infrastructure.Data
                         .RuleFor(p => p.IsActive, true)
                         .RuleFor(p => p.CategoryId, f => f.PickRandom(categoryIds))
                         .RuleFor(p => p.BrandId, f => f.PickRandom(brandIds))
-                        .RuleFor(p => p.Image, f => imageFaker.Generate());
+                        .RuleFor(p => p.Images, f => imageFaker.Generate(f.Random.Int(1, 3)));
 
                     var products = productFaker.Generate(50);
                     await context.Products.AddRangeAsync(products);

@@ -1,6 +1,6 @@
-﻿namespace TiendaUCN.Application.DTOs.ProductDTO;
+﻿namespace TiendaUCN.src.Application.DTOs.ProductDTO.Admin;
 
-public class ProductCreateDTO
+public class roductCreateDTO
 {
     public required string Name { get; set; }
     public string Description { get; set; } = null!;
@@ -8,5 +8,5 @@ public class ProductCreateDTO
     public int Stock { get; set; }
     public int CategoryId { get; set; }
     public int BrandId { get; set; }
-    public IFormFile? Image { get; set; }
+    public IFormFile? Images { get; set; }
 }
