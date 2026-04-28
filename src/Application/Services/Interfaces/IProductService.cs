@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TiendaUCN.Application.DTOs.ProductDTO.Admin;
 using TiendaUCN.src.Application.DTOs.ProductDTO;
 using TiendaUCN.src.Application.DTOs.ProductDTO.Admin;
 using TiendaUCN.src.Application.DTOs.ProductDTO.Customer;
@@ -19,6 +20,6 @@ namespace TiendaUCN.src.Application.Services.Interfaces
         Task<ListedProductsForAdminDTO> GetListedProductsForAdminAsync(SearchParamsDTO searchParams);
         Task<ListedProductsForCustomerDTO> GetListedProductsForCustomerAsync(SearchParamsDTO searchParams);
         Task UpdateProductAsync(int id, UpdateProductDTO updateProductDTO);
-        
+
     }
 }

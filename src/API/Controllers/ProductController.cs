@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TiendaUCN.Application.DTOs.ProductDTO.Admin;
 using TiendaUCN.src.Application.DTOs.BaseResponse;
 using TiendaUCN.src.Application.DTOs.ProductDTO;
 using TiendaUCN.src.Application.DTOs.ProductDTO.Admin;
@@ -16,7 +17,7 @@ namespace TiendaUCN.src.API.Controllers
     [Route("api/[controller]")]
     [Authorize(Roles = "Admin")]
 
-        public class ProductController : ControllerBase
+    public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
         public ProductController(IProductService productService)
@@ -26,11 +27,12 @@ namespace TiendaUCN.src.API.Controllers
 
         [HttpPost]
 
-        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDTO productCreateDTO)
+
+        public async Task<IActionResult> CreateProduct([FromForm] ProductCreateDTO productCreateDTO)
         {
             var result = await _productService.CreateProductAsync(productCreateDTO);
             return Created($"/api/product/{result}", new GenericResponse<string>("El producto ha sido creado exitosamente", result));
-           
+
         }
         [HttpPut("switch-status/{id}")]
         public async Task<IActionResult> SwitchProductStatus([FromRoute] int id)
@@ -45,7 +47,7 @@ namespace TiendaUCN.src.API.Controllers
         {
             var result = await _productService.GetProductByIdForCustomerAsync(id);
             return Ok(new GenericResponse<ProductDetailCustomerDTO>("Producto encontrado", result));
-        }   
+        }
 
         [HttpGet("admin/{id}")]
         public async Task<IActionResult> GetProductByIdForAdmin([FromRoute] int id)
@@ -57,7 +59,7 @@ namespace TiendaUCN.src.API.Controllers
         public async Task<IActionResult> DeleteProduct([FromRoute] int id)
         {
             await _productService.DeleteProductAsync(id);
-            return Ok(new GenericResponse<string>("El producto ha sido eliminado", null ));
+            return Ok(new GenericResponse<string>("El producto ha sido eliminado", null));
         }
 
         [HttpGet]
@@ -65,7 +67,7 @@ namespace TiendaUCN.src.API.Controllers
         public async Task<IActionResult> ListedProductsForCustomerDTO([FromQuery] SearchParamsDTO searchParams)
         {
             var result = await _productService.GetListedProductsForCustomerAsync(searchParams);
-            return Ok(new GenericResponse<ListedProductsForCustomerDTO>("Productos encontrados", result)); 
+            return Ok(new GenericResponse<ListedProductsForCustomerDTO>("Productos encontrados", result));
         }
         [HttpGet("admin")]
 
@@ -81,7 +83,7 @@ namespace TiendaUCN.src.API.Controllers
             await _productService.UpdateProductAsync(id, updateProductDTO);
             return Ok(new GenericResponse<string>("El producto ha sido actualizado exitosamente", null));
         }
-        
-    }   
-    
+
+    }
+
 }

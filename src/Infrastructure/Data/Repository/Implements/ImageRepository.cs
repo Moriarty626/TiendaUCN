@@ -1,21 +1,37 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using TiendaUCN.src.Domain.Models;
+using TiendaUCN.src.Infrastructure.Data;
 
-namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
+namespace TiendaUCN.Infrastructure.Data.Repository.Implements
 {
     public class ImageRepository : IImageRepository
     {
-        public Task<bool?> CreateImageAsync(Image image)
+        private readonly DataContext _context;
+
+        public ImageRepository(DataContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<bool?> DeleteAsync(string publicId)
+        public async Task<bool?> CreateImageAsync(Image image)
         {
-            throw new NotImplementedException();
+            // Agregamos la entidad imagen a la base de datos
+            await _context.Images.AddAsync(image);
+
+            // Guardamos los cambios y retornamos true si se guardó al menos una fila
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool?> DeleteAsync(string publicId)
+        {
+            // Buscamos la imagen por su PublicId de Cloudinary
+            var image = await _context.Images.FirstOrDefaultAsync(i => i.PublicId == publicId);
+
+            if (image == null) return false;
+
+            // Eliminación física de la imagen (aquí no suele aplicarse soft delete)
+            _context.Images.Remove(image);
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

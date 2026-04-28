@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TiendaUCN.src.Application.DTOs.ProductDTO.Admin
+namespace TiendaUCN.Application.DTOs.ProductDTO.Admin
 {
-     public class ProductDetailAdminDTO
+    public class ProductDetailAdminDTO
     {
         public required int Id { get; set; }
         public required string Name { get; set; }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TiendaUCN.Application.DTOs.ProductDTO.Admin;
 using TiendaUCN.src.Application.DTOs.ProductDTO.Admin;
 using TiendaUCN.src.Application.DTOs.ProductDTO.Customer;
 using TiendaUCN.src.Domain.Models;
@@ -13,7 +14,7 @@ namespace TiendaUCN.src.Application.Mappers
     {
         private readonly string? _defaultImageURL;
         private readonly int _fewUnitsAvailable;
-    
+
         private readonly IConfiguration _configuration;
 
         public ProductMapper(IConfiguration configuration)
@@ -37,8 +38,8 @@ namespace TiendaUCN.src.Application.Mappers
                 .Map(dest => dest.Price, src => src.Price.ToString("C"))
                 .Map(dest => dest.CategoryDescription, src => src.Category.Description)
                 .Map(dest => dest.ImagesURL, src => src.Images.Count() != 0 ?
-                    src.Images.Select(i => i.ImageUrl).ToList() : new List <string> { _defaultImageURL!});
-                
+                    src.Images.Select(i => i.ImageUrl).ToList() : new List<string> { _defaultImageURL! });
+
             TypeAdapterConfig<Product, ProductDetailAdminDTO>.NewConfig()
                 .Map(dest => dest.Price, src => src.Price.ToString("C"))
                 .Map(dest => dest.BrandName, src => src.Brand.Name)
@@ -58,14 +59,14 @@ namespace TiendaUCN.src.Application.Mappers
                 .Map(dest => dest.Price, src => src.Price.ToString("C"))
                 .Map(dest => dest.Available, src => src.IsActive ? "Activo" : "Inactivo");
         }
-                
-        
-         private string GetStockIndicator(int stock)
+
+
+        private string GetStockIndicator(int stock)
         {
             if (stock == 0) { return "Producto sin stock"; }
             if (stock <= _fewUnitsAvailable) { return "Pocas unidades disponibles"; }
             return "Con Stock"!;
         }
-        
+
     }
 }
