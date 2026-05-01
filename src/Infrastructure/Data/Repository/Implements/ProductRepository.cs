@@ -3,8 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TiendaUCN.Domain.Models.Product;
+using TiendaUCN.Infrastructure.Data.Migrations;
 using TiendaUCN.src.Application.DTOs.ProductDTO;
 using TiendaUCN.src.Domain.Models;
+using TiendaUCN.src.Domain.Models.Product;
 
 namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
 {
@@ -15,7 +18,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
         {
             _context = context;
         }
-        
+
         public Task<bool> CreateProductAsync(Product product)
         {
             _context.Products.Add(product);
@@ -33,17 +36,17 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
         public async Task<bool> ExistsIdAsync(int id)
         {
             return await _context.Products
-                .AnyAsync(p => 
-                p.Id == id && 
+                .AnyAsync(p =>
+                p.Id == id &&
                 p.DeletedAt == false);
         }
 
         public async Task<bool> ExistsIdCustomerAsync(int id)
         {
             return await _context.Products
-                .AnyAsync(p => 
-                p.Id == id && 
-                p.DeletedAt == false && 
+                .AnyAsync(p =>
+                p.Id == id &&
+                p.DeletedAt == false &&
                 p.IsActive == true);
         }
 
@@ -51,13 +54,13 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
         {
             return await _context.Products
                 .Include(p => p.Brand)
-                .AnyAsync(p => 
-                p.Name.ToLower() == name.ToLower() && 
-                p.Brand.Name.ToLower() == brandName.ToLower() && 
+                .AnyAsync(p =>
+                p.Name.ToLower() == name.ToLower() &&
+                p.Brand.Name.ToLower() == brandName.ToLower() &&
                 p.DeletedAt == false &&
                 p.Brand.DeletedAt == false);
         }
-    
+
         public Task<(IEnumerable<Product> products, int totalCount)> GetFilteredAdminAsync(SearchParamsDTO searchParams)
         {
             throw new NotImplementedException();
@@ -71,39 +74,39 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
                 .Include(p => p.Images.Take(1))
                 .Where(p => p.DeletedAt == false && p.IsActive == true)
                 .AsNoTracking();
-            
+
             if (!string.IsNullOrWhiteSpace(searchParams.SearchTerm))
             {
                 var search = searchParams.SearchTerm.Trim().ToLower();
-                query = query.Where(p => 
-                    p.Name.ToLower().Contains(search) || 
-                    p.Description.ToLower().Contains(search) || 
-                    p.Category.Name.ToLower().Contains(search) || 
+                query = query.Where(p =>
+                    p.Name.ToLower().Contains(search) ||
+                    p.Description.ToLower().Contains(search) ||
+                    p.Category.Name.ToLower().Contains(search) ||
                     (p.Category.Description != null && p.Category.Description.ToLower().Contains(search)) ||
-                    p.Brand.Name.ToLower().Contains(search) || 
+                    p.Brand.Name.ToLower().Contains(search) ||
                      (p.Brand.Description != null && p.Brand.Description.ToLower().Contains(search)) ||
-                    p.Price.ToString().Contains(search) || 
+                    p.Price.ToString().Contains(search) ||
                     p.Stock.ToString().Contains(search));
             }
-                int totalCount = await query.CountAsync();
+            int totalCount = await query.CountAsync();
 
-                var products = await query
-                     .OrderByDescending(p => p.CreatedAt)
-                    .Skip((searchParams.PageNumber - 1) * searchParams.PageSize)
-                    .Take(searchParams.PageSize)
-                    .ToArrayAsync();
-                return (products, totalCount);
-            }
-        
-    
+            var products = await query
+                 .OrderByDescending(p => p.CreatedAt)
+                .Skip((searchParams.PageNumber - 1) * searchParams.PageSize)
+                .Take(searchParams.PageSize)
+                .ToArrayAsync();
+            return (products, totalCount);
+        }
+
+
 
         public async Task<Product?> GetProductIdAdminAsync(int id)
         {
-             return await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.Brand)
-                .Include(p => p.Images)
-                .FirstOrDefaultAsync(p => p.Id == id && p.DeletedAt == false);
+            return await _context.Products
+               .Include(p => p.Category)
+               .Include(p => p.Brand)
+               .Include(p => p.Images)
+               .FirstOrDefaultAsync(p => p.Id == id && p.DeletedAt == false);
         }
 
         public async Task<Product?> GetProductIdCustomerAsync(int id)
@@ -134,7 +137,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
         {
             return await _context.Products
                 .Where(p => p.Id == product.Id && p.DeletedAt == false)
-                .ExecuteUpdateAsync(p => 
+                .ExecuteUpdateAsync(p =>
                     p.SetProperty(x => x.Name, product.Name)
                      .SetProperty(x => x.Description, product.Description)
                      .SetProperty(x => x.Price, product.Price)

@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TiendaUCN.Domain.Models.Product;
+using TiendaUCN.Infrastructure.Data.Migrations;
 using TiendaUCN.src.Domain.Models;
 
 namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
@@ -17,8 +19,8 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
 
         public async Task<bool> CreateBrandAsync(Brand brand)
         {
-           _context.Brands.Add(brand);
-           return await _context.SaveChangesAsync() > 0;
+            _context.Brands.Add(brand);
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -39,7 +41,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
         public async Task<bool> ExistsNameAsync(string name)
         {
             return await _context.Brands
-                .AnyAsync(b => 
+                .AnyAsync(b =>
                     b.Name.ToLower() == name.ToLower() &&
                     b.DeletedAt == false);
         }
@@ -70,4 +72,3 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
         }
     }
 }
-    

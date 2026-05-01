@@ -1,4 +1,5 @@
 using Mapster;
+using TiendaUCN.Domain.Models.User;
 using TiendaUCN.src.Application.DTOs.AuthDTO;
 using TiendaUCN.src.Domain.Models;
 namespace TiendaUCN.src.Application.Mappers

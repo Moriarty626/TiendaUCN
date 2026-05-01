@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TiendaUCN.src.Application.DTOs.BrandDTO;
-using TiendaUCN.src.Application.Services.Interfaces;
 using TiendaUCN.src.Domain.Models;
 
-namespace TiendaUCN.src.Application.Services.Implements
+namespace TiendaUCN.Application.Services.Implements
 {
-    public class BrandService: IBrandService
+    public class BrandService : IBrandService
     {
         private readonly IBrandRepository _brandRepository;
         public BrandService(IBrandRepository brandRepository)

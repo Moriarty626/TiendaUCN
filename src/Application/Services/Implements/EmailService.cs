@@ -1,7 +1,7 @@
 using Resend;
 using TiendaUCN.src.Application.Services.Interfaces;
 
-namespace TiendaUCN.src.Application.Services.Implements
+namespace TiendaUCN.Application.Services.Implements
 {
     public class EmailService : IEmailService
     {

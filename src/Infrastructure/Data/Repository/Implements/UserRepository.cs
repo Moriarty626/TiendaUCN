@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using TiendaUCN.Domain.Models.User;
+using TiendaUCN.Infrastructure.Data.Migrations;
 using TiendaUCN.src.Domain.Models;
 using TiendaUCN.src.Infrastructure.Data;
 

@@ -3,7 +3,7 @@
 ##
 ## Get latest from `dotnet new gitignore`
 #Appsettings files
-src/API/appsettings.json
+appsettings.json
 # Base de datos
 *.db
 *.db-shm

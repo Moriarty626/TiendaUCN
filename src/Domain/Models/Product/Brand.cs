@@ -1,4 +1,4 @@
-﻿namespace TiendaUCN.src.Domain.Models
+﻿namespace TiendaUCN.Domain.Models.Product
 {
     public class Brand
     {
@@ -9,6 +9,6 @@
         public string? Description { get; set; }
 
         // Relaciones
-        public ICollection<Product> Products { get; set; } = new List<Product>();
+        public IEnumerable<src.Domain.Models.Product.Product>? Products { get; set; } = new List<src.Domain.Models.Product.Product>();
     }
 }

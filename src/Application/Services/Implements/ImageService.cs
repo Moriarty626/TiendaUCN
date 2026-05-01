@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
+using TiendaUCN.Domain.Models.Product;
+using TiendaUCN.Infrastructure.Data.Repository;
 using TiendaUCN.src.Application.Services.Interfaces;
 using TiendaUCN.src.Domain.Models;
 
@@ -69,13 +71,14 @@ namespace TiendaUCN.Application.Services.Implements
 
         public async Task<bool> DeleteImageAsync(string publicId)
         {
+            if (string.IsNullOrEmpty(publicId)) return false;
+
             var deletionParams = new DeletionParams(publicId);
             var deletionResult = await _cloudinary.DestroyAsync(deletionParams);
 
             if (deletionResult.Result != "ok") return false;
 
             var result = await _imageRepository.DeleteAsync(publicId);
-
             return result ?? false;
         }
     }

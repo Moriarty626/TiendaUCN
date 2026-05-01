@@ -9,6 +9,7 @@ using Serilog;
 using System.Text;
 using TiendaUCN.Application.Services.Implements;
 using TiendaUCN.Application.Services.Interfaces;
+using TiendaUCN.Infrastructure.Data.Migrations;
 using TiendaUCN.Infrastructure.Data.Repository.Implements;
 using TiendaUCN.src.API.Middlewares;
 using TiendaUCN.src.Application.DTOs.BrandDTO;
@@ -77,10 +78,11 @@ builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
-//Falta agregar el servicio de categoría
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
-
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICartService, CartService>();
 #endregion
 
 #region Email Service Configuration
@@ -96,7 +98,31 @@ builder.Services.Configure<ResendClientOptions>(o =>
 builder.Services.AddTransient<IResend, ResendClient>();
 #endregion
 
+builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSQLiteStorage("Data Source=database.db"));
+
+
+builder.Services.AddHangfireServer();
+
 var app = builder.Build();
+
+// 3. Activa la interfaz gráfica (Dashboard) de Hangfire
+app.UseHangfireDashboard();
+
+// 4. Programa la limpieza de usuarios no verificados (Todos los días a medianoche)
+RecurringJob.AddOrUpdate<TiendaUCN.src.Infrastructure.Services.HangfireService>(
+    "borrar-usuarios-no-verificados",
+    servicio => servicio.CleanUnverifiedUsersJob(),
+    Cron.Daily);
+
+// 5. Programa la limpieza de la Blacklist (Todos los días a medianoche)
+RecurringJob.AddOrUpdate<TiendaUCN.src.Infrastructure.Services.HangfireService>(
+    "limpiar-blacklist-jwt",
+    servicio => servicio.CleanExpiredTokensJob(),
+    Cron.Daily);
 
 app.MapOpenApi();
 

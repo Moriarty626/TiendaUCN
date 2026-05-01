@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TiendaUCN.Infrastructure.Data.Migrations;
+using TiendaUCN.src.Domain.JwtBlacklist;
 using TiendaUCN.src.Domain.Models;
 using TiendaUCN.src.Infrastructure.Data;
 
@@ -15,7 +17,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
 
         public async Task AddToBlacklistAsync(JwtBlacklist token)
         {
-        
+
             await _context.JwtBlacklist.AddAsync(token);
             await _context.SaveChangesAsync();
         }

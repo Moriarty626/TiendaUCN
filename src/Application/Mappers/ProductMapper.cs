@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TiendaUCN.Application.DTOs.ProductDTO.Admin;
+using TiendaUCN.Domain.Models.Product;
 using TiendaUCN.src.Application.DTOs.ProductDTO.Admin;
 using TiendaUCN.src.Application.DTOs.ProductDTO.Customer;
 using TiendaUCN.src.Domain.Models;
+using TiendaUCN.src.Domain.Models.Product;
 
 namespace TiendaUCN.src.Application.Mappers
 {

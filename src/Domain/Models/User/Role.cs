@@ -1,4 +1,4 @@
-﻿namespace TiendaUCN.src.Domain.Models
+﻿namespace TiendaUCN.Domain.Models.User
 {
     public class Role
     {

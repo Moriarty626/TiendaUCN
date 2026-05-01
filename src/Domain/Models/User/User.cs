@@ -1,6 +1,5 @@
-﻿namespace TiendaUCN.src.Domain.Models;
-using TiendaUCN.src.Domain.Models;
-
+﻿using TiendaUCN.src.Domain.Models.Cart;
+namespace TiendaUCN.Domain.Models.User;
 
 public class User
 {
@@ -21,8 +20,8 @@ public class User
     public Role Role { get; set; } = null!;
 
     public bool IsDeleted { get; set; } = false;
-
+    public bool IsVerified { get; set; } = false;
     // Relaciones
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
-    public ICollection<Order> Orders { get; set; } = new List<Order>();
+    public IEnumerable<Order.Order>? Orders { get; set; } = new List<Order.Order>();
 }

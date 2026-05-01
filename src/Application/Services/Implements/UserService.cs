@@ -1,9 +1,11 @@
 using Mapster;
 using Serilog;
+using TiendaUCN.Domain.Models.User;
 using TiendaUCN.src.Application.DTOs.AuthDTO;
 using TiendaUCN.src.Application.Services.Interfaces;
+using TiendaUCN.src.Domain.Models;
 
-namespace TiendaUCN.src.Domain.Models
+namespace TiendaUCN.Application.Services.Implements
 {
     public class UserService : IUserService
     {
@@ -126,7 +128,7 @@ namespace TiendaUCN.src.Domain.Models
                 Log.Warning("Intento de cierre de sesión con token nulo o vacío.");
                 throw new ArgumentNullException("El token no puede ser nulo o vacío.");
             }
-            
+
             await _tokenService.AddToBlacklistAsync(token);
 
             Log.Information("Cierre de sesión exitoso. Token añadido a la blacklist.");

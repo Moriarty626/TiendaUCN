@@ -1,4 +1,4 @@
-﻿namespace TiendaUCN.src.Domain.Models
+﻿namespace TiendaUCN.Domain.Models.Order
 {
     public class Order
     {
@@ -9,7 +9,7 @@
 
         // Relación con User
         public int UserId { get; set; }
-        public User User { get; set; } = null!;
+        public User.User User { get; set; } = null!;
 
         // Relaciones
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();

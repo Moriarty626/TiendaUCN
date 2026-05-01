@@ -1,4 +1,8 @@
-﻿namespace TiendaUCN.src.Domain.Models
+﻿using TiendaUCN.Domain.Models.Order;
+using TiendaUCN.Domain.Models.Product;
+using TiendaUCN.src.Domain.Models.Cart;
+
+namespace TiendaUCN.src.Domain.Models.Product
 {
     public class Product
     {
@@ -19,10 +23,10 @@
         public int BrandId { get; set; }
         public Brand Brand { get; set; } = null!;
 
-         // Relaciones
-         public ICollection<Image> Images { get; set; } = new List<Image>();
+        // Relaciones
+        public ICollection<Image> Images { get; set; } = new List<Image>();
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
         public ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
-        
+
     }
 }

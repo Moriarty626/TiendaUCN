@@ -1,4 +1,6 @@
 
+using TiendaUCN.Domain.Models.User;
+
 namespace TiendaUCN.src.Domain.Models
 {
     public interface IUserRepository

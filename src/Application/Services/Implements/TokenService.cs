@@ -1,15 +1,15 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using TiendaUCN.Domain.Models.User;
 using TiendaUCN.src.Application.Services.Interfaces;
+using TiendaUCN.src.Domain.JwtBlacklist;
 using TiendaUCN.src.Domain.Models;
 using TiendaUCN.src.Infrastructure.Data.Repository.Implements;
 
-
-namespace TiendaUCN.src.Application.Services.Implements
+namespace TiendaUCN.Application.Services.Implements
 {
     public class TokenService : ITokenService
     {
@@ -60,14 +60,14 @@ namespace TiendaUCN.src.Application.Services.Implements
                 throw new InvalidOperationException("No se pudo generar el token de acceso.");
             }
 
-        
+
         }
 
         public async Task AddToBlacklistAsync(string token)
         {
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
-            var jti = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value 
+            var jti = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value
                 ?? throw new InvalidOperationException("El token no contiene un claim 'jti' valido para ser agregado a la blacklist.");
             var expiresAt = jwtToken.ValidTo;
 
@@ -88,18 +88,18 @@ namespace TiendaUCN.src.Application.Services.Implements
 
         public async Task<bool> IsTokenBlacklistedAsync(string token)
         {
-           var TokenHnadler = new JwtSecurityTokenHandler();
-           var jwtToken = TokenHnadler.ReadJwtToken(token);
+            var TokenHnadler = new JwtSecurityTokenHandler();
+            var jwtToken = TokenHnadler.ReadJwtToken(token);
 
-           var jti = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value ;
-           if (jti != null)
-           {
+            var jti = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+            if (jti != null)
+            {
                 var isBlacklisted = await _tokenRepository.IsTokenBlacklistedAsync(jti);
                 return isBlacklisted;
-            
-           }
-           Log.Warning("El token proporcionado no contiene un claim 'jti' válido para verificar en la blacklist.");
-           throw new InvalidOperationException("El token no contiene un 'jti' válido");
+
+            }
+            Log.Warning("El token proporcionado no contiene un claim 'jti' válido para verificar en la blacklist.");
+            throw new InvalidOperationException("El token no contiene un 'jti' válido");
         }
 
         public async Task<int> DeleteExpiredTokensInBlacklistAsync()
@@ -107,7 +107,7 @@ namespace TiendaUCN.src.Application.Services.Implements
             int deletedCount = await _tokenRepository.PurgeExpiredTokensAsync();
             Log.Information("Tokens expirados eliminados de la blacklist: {DeletedCount}", deletedCount);
             return deletedCount;
-        
+
         }
     }
 }

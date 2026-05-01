@@ -1,4 +1,5 @@
 
+using TiendaUCN.Domain.Models.User;
 using TiendaUCN.src.Domain.Models;
 
 namespace TiendaUCN.src.Application.Services.Interfaces

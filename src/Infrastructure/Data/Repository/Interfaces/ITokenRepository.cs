@@ -1,4 +1,5 @@
-﻿using TiendaUCN.src.Domain.Models;
+﻿using TiendaUCN.src.Domain.JwtBlacklist;
+using TiendaUCN.src.Domain.Models;
 
 
 namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements

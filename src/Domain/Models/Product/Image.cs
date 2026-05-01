@@ -1,4 +1,4 @@
-﻿namespace TiendaUCN.src.Domain.Models
+﻿namespace TiendaUCN.Domain.Models.Product
 {
     public class Image
     {
@@ -6,8 +6,9 @@
         public string ImageUrl { get; set; } = null!;
         public string PublicId { get; set; } = null!;  // ID en Cloudinary
 
-        // Relación con Product
         public int ProductId { get; set; }
-        public Product Product { get; set; } = null!;
+        public src.Domain.Models.Product.Product Product { get; set; } = null!;
+
+        public bool IsActive { get; set; } = true;
     }
 }

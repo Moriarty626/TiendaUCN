@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TiendaUCN.Infrastructure.Data.Migrations;
 using TiendaUCN.src.Infrastructure.Data;
 
-namespace TiendaUCN.Infrastructure.Services;
+
+namespace TiendaUCN.src.Infrastructure.Services;
 
 public class HangfireService(DataContext context)
 {

@@ -1,4 +1,4 @@
-﻿namespace TiendaUCN.src.Domain.Models
+﻿namespace TiendaUCN.src.Domain.JwtBlacklist
 {
     public class JwtBlacklist
     {

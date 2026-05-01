@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace TiendaUCN.src.Infrastructure.Data.Migrations
+namespace TiendaUCN.Migrations
 {
     /// <inheritdoc />
-    public partial class AddJwtAndAuth : Migration
+    public partial class InitialClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
