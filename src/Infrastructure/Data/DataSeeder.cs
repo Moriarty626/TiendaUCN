@@ -20,7 +20,7 @@ namespace TiendaUCN.src.Infrastructure.Data
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
                 var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-                await context.Database.EnsureCreatedAsync(); // Asegura que la base de datos se cree si no existe
+                // await context.Database.EnsureCreatedAsync(); // Asegura que la base de datos se cree si no existe
                 await context.Database.MigrateAsync(); // Aplica las migraciones pendientes a la base de datos
 
                 // Extraer géneros de usuario desde la configuración

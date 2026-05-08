@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TiendaUCN.Infrastructure.Data.Migrations;
 
@@ -10,9 +11,11 @@ using TiendaUCN.Infrastructure.Data.Migrations;
 namespace TiendaUCN.src.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260508033005_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
@@ -33,7 +36,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Cart");
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("TiendaUCN.Domain.Models.Order.Order", b =>
@@ -79,9 +82,6 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ProductId1")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -102,8 +102,6 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
                     b.HasIndex("OrderId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("ProductId1");
 
                     b.ToTable("OrderDetails");
                 });
@@ -339,13 +337,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
                     b.Property<int>("CartId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CartId1")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ProductId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ProductId1")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Quantity")
@@ -358,11 +350,7 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("CartId1");
-
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("ProductId1");
 
                     b.HasIndex("UserId");
 
@@ -448,14 +436,10 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("TiendaUCN.src.Domain.Models.Product.Product", "Product")
-                        .WithMany()
+                        .WithMany("OrderDetails")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("TiendaUCN.src.Domain.Models.Product.Product", null)
-                        .WithMany("OrderDetails")
-                        .HasForeignKey("ProductId1");
 
                     b.Navigation("Order");
 
@@ -487,24 +471,16 @@ namespace TiendaUCN.src.Infrastructure.Data.Migrations
             modelBuilder.Entity("TiendaUCN.src.Domain.Models.Cart.CartItem", b =>
                 {
                     b.HasOne("TiendaUCN.Domain.Models.Cart.Cart", "Cart")
-                        .WithMany()
+                        .WithMany("Items")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TiendaUCN.Domain.Models.Cart.Cart", null)
-                        .WithMany("Items")
-                        .HasForeignKey("CartId1");
-
                     b.HasOne("TiendaUCN.src.Domain.Models.Product.Product", "Product")
-                        .WithMany()
+                        .WithMany("CartItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("TiendaUCN.src.Domain.Models.Product.Product", null)
-                        .WithMany("CartItems")
-                        .HasForeignKey("ProductId1");
 
                     b.HasOne("TiendaUCN.Domain.Models.User.User", null)
                         .WithMany("CartItems")

@@ -61,9 +61,34 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
                 p.Brand.DeletedAt == false);
         }
 
-        public Task<(IEnumerable<Product> products, int totalCount)> GetFilteredAdminAsync(SearchParamsDTO searchParams)
+        public async Task<(IEnumerable<Product> products, int totalCount)> GetFilteredAdminAsync(SearchParamsDTO searchParams)
         {
-            throw new NotImplementedException();
+            var query = _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.Images)
+                .Where(p => p.DeletedAt == false)
+                .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(searchParams.SearchTerm))
+            {
+                var search = searchParams.SearchTerm.Trim().ToLower();
+                query = query.Where(p =>
+                    p.Name.ToLower().Contains(search) ||
+                    p.Description.ToLower().Contains(search) ||
+                    p.Category.Name.ToLower().Contains(search) ||
+                    p.Brand.Name.ToLower().Contains(search));
+            }
+
+            int totalCount = await query.CountAsync();
+
+            var products = await query
+                 .OrderByDescending(p => p.CreatedAt)
+                .Skip((searchParams.PageNumber - 1) * searchParams.PageSize)
+                .Take(searchParams.PageSize)
+                .ToArrayAsync();
+
+            return (products, totalCount);
         }
 
         public async Task<(IEnumerable<Product> products, int totalCount)> GetFilteredCustomerAsync(SearchParamsDTO searchParams)

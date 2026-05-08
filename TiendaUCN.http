@@ -1,6 +1,67 @@
 @TiendaUCN_HostAddress = http://localhost:5094
 
-GET {{TiendaUCN_HostAddress}}/weatherforecast/
-Accept: application/json
+### 1. REGISTRO (Éxito)
+POST {{TiendaUCN_HostAddress}}/api/auth/register
+Content-Type: application/json
 
-###
+{
+  "name": "Juan Perez",
+  "email": "juan.perez@example.com",
+  "rut": "12345678-5",
+  "phoneNumber": "+569 12345678",
+  "birthDate": "1990-01-01T00:00:00",
+  "gender": "Masculino",
+  "password": "Password1!",
+  "confirmPassword": "Password1!"
+}
+
+### 2. REGISTRO (Error - Menor de edad)
+POST {{TiendaUCN_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Niño Prueba",
+  "email": "nino@example.com",
+  "rut": "23456789-0",
+  "phoneNumber": "+569 87654321",
+  "birthDate": "2015-01-01T00:00:00",
+  "gender": "Masculino",
+  "password": "Password1!",
+  "confirmPassword": "Password1!"
+}
+
+### 3. LOGIN
+# @name login
+POST {{TiendaUCN_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "juan.perez@example.com",
+  "password": "Password1!"
+}
+
+### Guardar Token del Login
+@authToken = {{login.response.body.token}}
+
+### 4. LISTAR PRODUCTOS (Cliente)
+GET {{TiendaUCN_HostAddress}}/api/product?PageNumber=1&PageSize=10
+
+### 5. AGREGAR AL CARRITO
+POST {{TiendaUCN_HostAddress}}/api/cart/add?userId=1&productId=1&quantity=1
+Authorization: Bearer {{authToken}}
+
+### 6. VER CARRITO
+GET {{TiendaUCN_HostAddress}}/api/cart/1
+Authorization: Bearer {{authToken}}
+
+### 7. CHECKOUT
+POST {{TiendaUCN_HostAddress}}/api/cart/checkout/1
+Authorization: Bearer {{authToken}}
+
+### 8. HISTORIAL DE ÓRDENES
+GET {{TiendaUCN_HostAddress}}/api/order/history
+Authorization: Bearer {{authToken}}
+
+### 9. LOGOUT
+POST {{TiendaUCN_HostAddress}}/api/auth/logout
+Authorization: Bearer {{authToken}}

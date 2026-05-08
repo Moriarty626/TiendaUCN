@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TiendaUCN.Domain.Models.Cart;
 using TiendaUCN.Domain.Models.Order;
 using TiendaUCN.Domain.Models.Product;
 using TiendaUCN.Domain.Models.User;
@@ -10,16 +11,17 @@ namespace TiendaUCN.Infrastructure.Data.Migrations
 {
     public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
     {
-        
+
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Role> Roles { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Brand> Brands { get; set; } = null!;
         public DbSet<Product> Products { get; set; } = null!;
         public DbSet<Image> Images { get; set; } = null!;
-        public DbSet<CartItem> CartItems { get; set; } = null!; 
+        public DbSet<Cart> Carts { get; set; } = null!;
+        public DbSet<CartItem> CartItems { get; set; } = null!;
         public DbSet<Order> Orders { get; set; } = null!;
-        public DbSet<OrderDetail> OrderDetails { get; set; } = null!; 
+        public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
         public DbSet<JwtBlacklist> JwtBlacklist { get; set; } = null!;
         public DbSet<VerificationCode> VerificationCodes { get; set; } = null!;
 
@@ -77,14 +79,14 @@ namespace TiendaUCN.Infrastructure.Data.Migrations
             {
                 entity.HasKey(ci => ci.Id);
                 entity.Property(ci => ci.Quantity).IsRequired();
-                
+
                 entity.HasOne(ci => ci.Cart)
-                    .WithMany() 
+                    .WithMany(c => c.Items)
                     .HasForeignKey(ci => ci.CartId)
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(ci => ci.Product)
-                    .WithMany()
+                    .WithMany(p => p.CartItems)
                     .HasForeignKey(ci => ci.ProductId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
@@ -100,7 +102,7 @@ namespace TiendaUCN.Infrastructure.Data.Migrations
                 entity.HasOne(o => o.User)
                     .WithMany(u => u.Orders)
                     .HasForeignKey(o => o.UserId)
-                    .OnDelete(DeleteBehavior.Restrict); 
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<OrderDetail>(entity =>
@@ -115,9 +117,9 @@ namespace TiendaUCN.Infrastructure.Data.Migrations
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(od => od.Product)
-                    .WithMany()
+                    .WithMany(p => p.OrderDetails)
                     .HasForeignKey(od => od.ProductId)
-                    .OnDelete(DeleteBehavior.Restrict); 
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // ── JwtBlacklist ────────────────────────────────────────────────
