@@ -6,22 +6,31 @@ namespace TiendaUCN.Application.Services.Implements;
 
 public class PhotoService : IPhotoService
 {
-    private readonly Cloudinary _cloudinary;
+    private readonly Cloudinary? _cloudinary;
 
     public PhotoService()
     {
         // Leemos las credenciales desde las variables de entorno
-        var acc = new Account(
-            Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME"),
-            Environment.GetEnvironmentVariable("CLOUDINARY_API_KEY"),
-            Environment.GetEnvironmentVariable("CLOUDINARY_API_SECRET")
-        );
+        var cloudName = Environment.GetEnvironmentVariable("CLOUDINARY_CLOUD_NAME");
+        var apiKey = Environment.GetEnvironmentVariable("CLOUDINARY_API_KEY");
+        var apiSecret = Environment.GetEnvironmentVariable("CLOUDINARY_API_SECRET");
 
-        _cloudinary = new Cloudinary(acc);
+        if (!string.IsNullOrWhiteSpace(cloudName)
+            && !string.IsNullOrWhiteSpace(apiKey)
+            && !string.IsNullOrWhiteSpace(apiSecret))
+        {
+            var acc = new Account(cloudName, apiKey, apiSecret);
+            _cloudinary = new Cloudinary(acc);
+        }
     }
 
     public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file)
     {
+        if (_cloudinary is null)
+        {
+            throw new InvalidOperationException("Cloudinary no esta configurado. Define CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET.");
+        }
+
         var uploadResult = new ImageUploadResult();
 
         if (file.Length > 0)
@@ -42,6 +51,11 @@ public class PhotoService : IPhotoService
 
     public async Task<DeletionResult> DeletePhotoAsync(string publicId)
     {
+        if (_cloudinary is null)
+        {
+            throw new InvalidOperationException("Cloudinary no esta configurado. Define CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET.");
+        }
+
         var deleteParams = new DeletionParams(publicId);
         return await _cloudinary.DestroyAsync(deleteParams);
     }

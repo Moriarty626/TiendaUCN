@@ -1,0 +1,26 @@
+$kind: http-request
+name: Register
+url: "{{BaseUrl}}auth/register"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"Name\": \"rosa Cortez\",\r
+
+    \  \"Email\": \"rosa123@gmail.com\",\r
+
+    \  \"Rut\": \"96605090-K\",\r
+
+    \  \"PhoneNumber\": \"+569 66536084\",\r
+
+    \  \"BirthDate\": \"1898-03-28\",\r
+
+    \  \"Gender\": \"Otro\",\r
+
+    \  \"Password\": \"Eemuyysegura123.\",\r
+
+    \  \"ConfirmPassword\": \"Eemuyysegura123.\"\r
+
+    }"
+order: 3750285856371514

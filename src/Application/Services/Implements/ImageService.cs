@@ -13,26 +13,38 @@ namespace TiendaUCN.Application.Services.Implements
 {
     public class ImageService : IImageService
     {
-        private readonly Cloudinary _cloudinary;
+        private readonly Cloudinary? _cloudinary;
         private readonly IImageRepository _imageRepository;
 
         public ImageService(IConfiguration configuration, IImageRepository imageRepository)
         {
             _imageRepository = imageRepository;
 
-            // ✅ Credenciales configuradas directamente como strings
-            // NOTA: Asegúrate de que "Root" sea exactamente el Cloud Name de tu consola de Cloudinary
-            var account = new Account(
-                configuration["CLOUDINARY_CLOUD_NAME"],
-                configuration["CLOUDINARY_API_KEY"],
-                configuration["CLOUDINARY_API_SECRET"]
-            );
+            var cloudName = configuration["CLOUDINARY_CLOUD_NAME"]
+                ?? configuration["Cloudinary:CloudName"];
+            var apiKey = configuration["CLOUDINARY_API_KEY"]
+                ?? configuration["Cloudinary:ApiKey"];
+            var apiSecret = configuration["CLOUDINARY_API_SECRET"]
+                ?? configuration["Cloudinary:ApiSecret"];
 
-            _cloudinary = new Cloudinary(account);
+            // Allow the API to boot and serve read-only endpoints when Cloudinary
+            // credentials are not configured in local development.
+            if (!string.IsNullOrWhiteSpace(cloudName)
+                && !string.IsNullOrWhiteSpace(apiKey)
+                && !string.IsNullOrWhiteSpace(apiSecret))
+            {
+                var account = new Account(cloudName, apiKey, apiSecret);
+                _cloudinary = new Cloudinary(account);
+            }
         }
 
         public async Task<bool> UploadImageAsync(IFormFile file, int productId)
         {
+            if (_cloudinary is null)
+            {
+                throw new InvalidOperationException("Cloudinary no esta configurado. Define CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET.");
+            }
+
             if (file == null || file.Length == 0) return false;
 
             var uploadResult = new ImageUploadResult();
@@ -71,6 +83,11 @@ namespace TiendaUCN.Application.Services.Implements
 
         public async Task<bool> DeleteImageAsync(string publicId)
         {
+            if (_cloudinary is null)
+            {
+                throw new InvalidOperationException("Cloudinary no esta configurado. Define CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET.");
+            }
+
             if (string.IsNullOrEmpty(publicId)) return false;
 
             var deletionParams = new DeletionParams(publicId);

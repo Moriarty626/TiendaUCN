@@ -1,4 +1,6 @@
-﻿namespace TiendaUCN.Domain.Models.Order
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TiendaUCN.Domain.Models.Order
 {
     public class OrderDetail
     {
@@ -15,6 +17,8 @@
 
 
         public int ProductId { get; set; }
-        public src.Domain.Models.Product.Product Product { get; set; } = null!;
+
+        [ForeignKey("ProductId")]
+        public virtual TiendaUCN.src.Domain.Models.Product.Product Product { get; set; } = null!;
     }
 }

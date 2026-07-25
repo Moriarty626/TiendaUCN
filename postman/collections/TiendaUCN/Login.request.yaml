@@ -1,0 +1,26 @@
+$kind: http-request
+name: Login
+url: "{{BaseUrl}}api/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"Email\": \"gladys.araya@alumnos.ucn.cl\",\r
+
+    \    \"Password\": \"esta_es_una_clave_muy_larga_y_segura_123456\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "var response = pm.response.json();\r
+
+      \r
+
+      if (pm.response.code === 200 && response.data !== null && response.data !== undefined) {\r
+
+      \    pm.collectionVariables.set(\"token\", response.data);\r
+
+      }"
+    language: text/javascript
+order: 4465882416673388

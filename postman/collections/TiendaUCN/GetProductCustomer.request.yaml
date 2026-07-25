@@ -1,0 +1,5 @@
+$kind: http-request
+url: ""
+method: GET
+examples: .resources/GetProductCustomer.resources/examples
+order: 4489615119520536

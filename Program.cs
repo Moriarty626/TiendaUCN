@@ -26,6 +26,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendDev", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:3000", "http://localhost:3001")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 #region Logging Configuration
 builder.Host.UseSerilog((context, services, configuration) => configuration
@@ -137,6 +147,7 @@ using (var scope = app.Services.CreateScope())
 #endregion
 
 app.UseMiddleware<ExceptionHandilingMiddleware>(); // Primero: manejo de excepciones
+app.UseCors("FrontendDev");                         // Permite llamadas desde el frontend en desarrollo
 app.UseMiddleware<BlacklistMiddleware>();           // Segundo: validar blacklist
 app.UseAuthentication();                           // Tercero: autenticación JWT
 app.UseAuthorization();                            // Cuarto: autorización por rol

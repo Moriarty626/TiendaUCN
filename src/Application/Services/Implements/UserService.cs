@@ -52,6 +52,7 @@ namespace TiendaUCN.Application.Services.Implements
             }
 
             var user = registerDTO.Adapt<User>();
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
             await _userRepository.CreateAsync(user);
 
             Log.Information("Registro exitoso para el usuario {Email} con ID {Id}.", user.Email, user.Id);

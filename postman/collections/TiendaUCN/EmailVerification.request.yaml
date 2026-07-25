@@ -1,0 +1,14 @@
+$kind: http-request
+name: EmailVerification
+url: "{{BaseUrl}}auth/email-verification"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"Email\": \"gladys.araya@alumnos.ucn.cl\",\r
+
+    \    \"VerificationCode\": \"641350\"\r
+
+    }"
+order: 4446618862228469

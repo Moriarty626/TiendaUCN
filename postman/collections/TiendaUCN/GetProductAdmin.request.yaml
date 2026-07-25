@@ -1,0 +1,5 @@
+$kind: http-request
+name: GetProductAdmin
+url: ""
+method: GET
+order: 4491384637405880

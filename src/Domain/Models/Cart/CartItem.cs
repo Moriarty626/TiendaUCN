@@ -1,4 +1,6 @@
-﻿namespace TiendaUCN.src.Domain.Models.Cart
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace TiendaUCN.src.Domain.Models.Cart
 {
     public class CartItem
     {
@@ -6,10 +8,15 @@
 
         // Relación con el Carrito (Como están en la misma carpeta, Rider lo detecta solo)
         public int CartId { get; set; }
+        [ForeignKey("CartId")]
         public virtual TiendaUCN.Domain.Models.Cart.Cart Cart { get; set; } = null!;
+
+
 
         // Relación con el Producto (Ruta completa y absoluta a la clase para evitar confusiones)
         public int ProductId { get; set; }
+
+        [ForeignKey("ProductId")]
         public virtual TiendaUCN.src.Domain.Models.Product.Product Product { get; set; } = null!;
 
         public int Quantity { get; set; }
