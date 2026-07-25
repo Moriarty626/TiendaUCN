@@ -32,7 +32,12 @@ namespace TiendaUCN.Application.Services.Implements
                 var claims = new List<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, userId.Id.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, userId.Id.ToString()),
                     new Claim(ClaimTypes.Role, roleName),
+                    new Claim(ClaimTypes.Name, userId.Name ?? string.Empty),
+                    new Claim(ClaimTypes.Email, userId.Email ?? string.Empty),
+                    new Claim("name", userId.Name ?? string.Empty),
+                    new Claim("email", userId.Email ?? string.Empty),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Iat,
                         DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
