@@ -80,6 +80,15 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
                     p.Brand.Name.ToLower().Contains(search));
             }
 
+            if (!string.IsNullOrWhiteSpace(searchParams.CategoryName))
+                query = query.Where(p => p.Category.Name.ToLower() == searchParams.CategoryName.Trim().ToLower());
+
+            if (searchParams.PriceMin.HasValue)
+                query = query.Where(p => p.Price >= searchParams.PriceMin.Value);
+
+            if (searchParams.PriceMax.HasValue)
+                query = query.Where(p => p.Price <= searchParams.PriceMax.Value);
+
             int totalCount = await query.CountAsync();
 
             var products = await query
@@ -113,6 +122,16 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
                     p.Price.ToString().Contains(search) ||
                     p.Stock.ToString().Contains(search));
             }
+
+            if (!string.IsNullOrWhiteSpace(searchParams.CategoryName))
+                query = query.Where(p => p.Category.Name.ToLower() == searchParams.CategoryName.Trim().ToLower());
+
+            if (searchParams.PriceMin.HasValue)
+                query = query.Where(p => p.Price >= searchParams.PriceMin.Value);
+
+            if (searchParams.PriceMax.HasValue)
+                query = query.Where(p => p.Price <= searchParams.PriceMax.Value);
+
             int totalCount = await query.CountAsync();
 
             var products = await query

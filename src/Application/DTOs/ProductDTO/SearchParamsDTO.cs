@@ -19,5 +19,13 @@ namespace TiendaUCN.src.Application.DTOs.ProductDTO
         [MinLength(2, ErrorMessage = "El término de búsqueda debe tener al menos 2 caracteres.")]
         [MaxLength(25, ErrorMessage = "El término de búsqueda no puede exceder los 25 caracteres.")]
         public string? SearchTerm { get; set; }
+
+        public string? CategoryName { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "El precio mínimo debe ser mayor o igual a 0.")]
+        public decimal? PriceMin { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "El precio máximo debe ser mayor o igual a 0.")]
+        public decimal? PriceMax { get; set; }
     }
 }
