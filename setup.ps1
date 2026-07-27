@@ -1,6 +1,6 @@
 ﻿#!/usr/bin/env pwsh
 # ============================================================================
-# TiendaUCN - Script de Configuración y Ejecución para Pruebas
+# TiendaUCN - Script de Configuración y Ejecución para Pruebas (.\setup.ps1)
 # ============================================================================
 
 Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
@@ -86,6 +86,19 @@ function Restore-AppSettings {
     Write-Host ""
     
     if (Test-Path $appsettingsExample) {
+        if (Test-Path $appsettingsPath) {
+            Write-Warning-Custom "Ya existe appsettings.json y contiene configuración local."
+            $confirm = Read-Host "¿Reemplazarlo? Se creará un respaldo .bak (s/n)"
+            if ($confirm -ne "s") {
+                Write-Info "Operación cancelada; appsettings.json no fue modificado"
+                return
+            }
+
+            $backupPath = "$appsettingsPath.bak"
+            Copy-Item $appsettingsPath $backupPath -Force
+            Write-Success "Respaldo creado: $backupPath"
+        }
+
         Write-Info "Copiando appsettings.example.json → appsettings.json"
         Copy-Item $appsettingsExample $appsettingsPath -Force
         Write-Success "appsettings.json restaurado"

@@ -22,8 +22,8 @@ namespace TiendaUCN.src.Application.Mappers
         public ProductMapper(IConfiguration configuration)
         {
             _configuration = configuration;
-            _defaultImageURL = _configuration.GetValue<string>("Products:DefaultImageUrl") ?? throw new InvalidOperationException("La URL de la imagen no puede ser nula.");
-            _fewUnitsAvailable = _configuration.GetValue<int?>("Products:FewUnitsAvailable") ?? throw new InvalidOperationException("La configuración 'FewUnitsAvailable' no puede ser nula.");
+            _defaultImageURL = _configuration.GetValue<string>("Product:DefaulImageURL") ?? throw new InvalidOperationException("La URL de la imagen no puede ser nula.");
+            _fewUnitsAvailable = _configuration.GetValue<int?>("Product:FewUnitsAvailable") ?? throw new InvalidOperationException("La configuración 'FewUnitsAvailable' no puede ser nula.");
         }
         public void ConfigureAllMappings()
         {

@@ -126,11 +126,7 @@ namespace TiendaUCN.Application.Services.Implements
         public async Task<ListedProductsForCustomerDTO> GetListedProductsForCustomerAsync(SearchParamsDTO searchParams)
         {
             var (products, totalCount) = await _productRepository.GetFilteredCustomerAsync(searchParams);
-            if (totalCount == 0)
-            {
-                throw new KeyNotFoundException("No se encontraron productos.");
-            }
-            var totalPages = (int)Math.Ceiling((double)totalCount / searchParams.PageSize);
+            var totalPages = totalCount == 0 ? 1 : (int)Math.Ceiling((double)totalCount / searchParams.PageSize);
 
             return new ListedProductsForCustomerDTO
             {

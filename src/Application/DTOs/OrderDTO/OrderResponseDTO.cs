@@ -1,4 +1,4 @@
-﻿namespace TiendaUCN.src.Application.DTOs.OrderDTO
+namespace TiendaUCN.src.Application.DTOs.OrderDTO
 {
     public class OrderResponseDTO
     {
@@ -16,5 +16,16 @@
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Subtotal { get; set; }
+    }
+
+    public class CreateOrderDTO
+    {
+        public List<CreateOrderItemDTO> Items { get; set; } = new();
+    }
+
+    public class CreateOrderItemDTO
+    {
+        public int ProductoId { get; set; }
+        public int Cantidad { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using TiendaUCN.src.Application.DTOs.OrderDTO;
+using TiendaUCN.src.Application.DTOs.OrderDTO;
 
 namespace TiendaUCN.src.Application.Services.Interfaces
 {
@@ -6,5 +6,6 @@ namespace TiendaUCN.src.Application.Services.Interfaces
     {
         Task<IEnumerable<OrderResponseDTO>> GetUserOrderHistoryAsync(int userId);
         Task<OrderResponseDTO?> GetOrderByIdAsync(int orderId, int userId);
+        Task<OrderResponseDTO> CreateOrderAsync(int userId, CreateOrderDTO dto);
     }
 }
