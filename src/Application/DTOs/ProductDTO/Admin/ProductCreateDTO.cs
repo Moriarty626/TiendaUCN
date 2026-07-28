@@ -32,8 +32,6 @@ namespace TiendaUCN.src.Application.DTOs.ProductDTO.Admin
         [MinLength(3, ErrorMessage = "El nombre de la marca debe tener al menos 3 caracteres.")]
         public required string BrandName { get; set; }
 
-        [Required(ErrorMessage = "Las imágenes del producto son obligatorias.")]
-        [MinLength(1, ErrorMessage = "Debe proporcionar al menos una imagen para el producto.")]
-        public required List<IFormFile> ImagesFiles { get; set; }
+        public List<IFormFile>? ImagesFiles { get; set; }
     }
 }

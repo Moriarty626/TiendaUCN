@@ -2,7 +2,9 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using TiendaUCN.Domain.Models.Product;
 using TiendaUCN.Infrastructure.Data.Repository;
@@ -27,8 +29,6 @@ namespace TiendaUCN.Application.Services.Implements
             var apiSecret = configuration["CLOUDINARY_API_SECRET"]
                 ?? configuration["Cloudinary:ApiSecret"];
 
-            // Allow the API to boot and serve read-only endpoints when Cloudinary
-            // credentials are not configured in local development.
             if (!string.IsNullOrWhiteSpace(cloudName)
                 && !string.IsNullOrWhiteSpace(apiKey)
                 && !string.IsNullOrWhiteSpace(apiSecret))
@@ -40,44 +40,75 @@ namespace TiendaUCN.Application.Services.Implements
 
         public async Task<bool> UploadImageAsync(IFormFile file, int productId)
         {
-            if (_cloudinary is null)
-            {
-                throw new InvalidOperationException("Cloudinary no esta configurado. Define CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY y CLOUDINARY_API_SECRET.");
-            }
-
             if (file == null || file.Length == 0) return false;
 
-            var uploadResult = new ImageUploadResult();
+            string? imageUrl = null;
+            string publicId = Guid.NewGuid().ToString();
 
-            using (var stream = file.OpenReadStream())
+            // 1. Intentar subir a Cloudinary
+            if (_cloudinary != null)
             {
-                var uploadParams = new ImageUploadParams()
+                try
                 {
-                    File = new FileDescription(file.FileName, stream),
-                    Transformation = new Transformation().Width(500).Height(500).Crop("fill")
-                };
+                    using (var stream = file.OpenReadStream())
+                    {
+                        var uploadParams = new ImageUploadParams()
+                        {
+                            File = new FileDescription(file.FileName, stream),
+                            Transformation = new Transformation().Width(500).Height(500).Crop("fill")
+                        };
 
-                uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                        if (uploadResult != null && uploadResult.Error == null && uploadResult.SecureUrl != null)
+                        {
+                            imageUrl = uploadResult.SecureUrl.ToString();
+                            publicId = uploadResult.PublicId ?? publicId;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "No se pudo subir la imagen a Cloudinary. Se procederá a guardarla localmente.");
+                }
             }
 
-            if (uploadResult.Error != null)
+            // 2. Si Cloudinary no generó URL (error de API o no configurado), guardar la imagen localmente en wwwroot/uploads
+            if (string.IsNullOrEmpty(imageUrl))
             {
-                throw new Exception("Error al subir imagen a Cloudinary: " + uploadResult.Error.Message);
+                try
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileStream);
+                    }
+
+                    imageUrl = $"http://localhost:5094/uploads/{uniqueFileName}";
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Error al guardar la imagen localmente para el producto {ProductId}", productId);
+                    return false;
+                }
             }
 
-            // 2. Crear el objeto Image para la base de datos
-            // Asegúrate de que los nombres de las propiedades (ImageUrl, PublicId, ProductId) 
-            // coincidan con tu modelo en Domain.Models
+            // 3. Persistir en la base de datos
             var newImage = new Image
             {
-                ImageUrl = uploadResult.SecureUrl.ToString(),
-                PublicId = uploadResult.PublicId,
+                ImageUrl = imageUrl,
+                PublicId = publicId,
                 ProductId = productId
             };
 
-            // 3. Guardar en la base de datos
             var result = await _imageRepository.CreateImageAsync(newImage);
-
             return result ?? false;
         }
 

@@ -26,6 +26,20 @@ namespace TiendaUCN.src.Application.Services.Implements
             foreach (var item in dto.Items)
             {
                 var product = products.First(p => p.Id == item.ProductoId);
+
+                if (product.Stock <= 0)
+                {
+                    throw new InvalidOperationException($"El producto '{product.Name}' está sin stock.");
+                }
+
+                if (product.Stock < item.Cantidad)
+                {
+                    throw new InvalidOperationException($"Stock insuficiente para '{product.Name}'. Stock disponible: {product.Stock}.");
+                }
+
+                // Disminuir stock según la cantidad comprada
+                product.Stock -= item.Cantidad;
+
                 var subtotal = product.Price * item.Cantidad;
                 order.OrderDetails.Add(new OrderDetail
                 {

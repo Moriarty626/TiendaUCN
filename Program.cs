@@ -147,6 +147,7 @@ using (var scope = app.Services.CreateScope())
 #endregion
 
 app.UseMiddleware<ExceptionHandilingMiddleware>(); // Primero: manejo de excepciones
+app.UseStaticFiles();                               // Permite servir archivos estáticos desde wwwroot
 app.UseCors("FrontendDev");                         // Permite llamadas desde el frontend en desarrollo
 app.UseMiddleware<BlacklistMiddleware>();           // Segundo: validar blacklist
 app.UseAuthentication();                           // Tercero: autenticación JWT

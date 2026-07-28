@@ -12,6 +12,7 @@ namespace TiendaUCN.src.Application.DTOs.ProductDTO.Admin
         public string? MainImagesURL { get; set; }
         public required string Price { get; set; }
         public required string StockIndicator { get; set; }
+        public int Stock { get; set; }
         public required string Available { get; set; }
     }
 }

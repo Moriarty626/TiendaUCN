@@ -22,7 +22,7 @@ namespace TiendaUCN.Application.Services.Implements
             _tokenRepository = tokenRepository;
             _jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
                 ?? throw new InvalidOperationException("JWT_SECRET no está configurado en las variables de entorno.");
-            _jwtExpirationMinutes = configuration.GetValue<int>("Jwt:ExpirationMinutes", 60);
+            _jwtExpirationMinutes = configuration.GetValue<int>("Jwt:ExpirationMinutes", 43200);
         }
 
         public string GenerateAccessTokenAsync(User userId, string roleName)
@@ -32,6 +32,8 @@ namespace TiendaUCN.Application.Services.Implements
                 var claims = new List<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, userId.Id.ToString()),
+                    new Claim(ClaimTypes.Name, userId.Name ?? string.Empty),
+                    new Claim(ClaimTypes.Email, userId.Email ?? string.Empty),
                     new Claim(ClaimTypes.Role, roleName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Iat,

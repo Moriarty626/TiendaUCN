@@ -29,36 +29,46 @@ namespace TiendaUCN.Application.Services.Implements
 
         public async Task<string> CreateProductAsync(ProductCreateDTO createProductDTO)
         {
-            // 1. Validaciones de existencia
+            // 1. Validaciones de existencia y auto-creación de categoría/marca si no existen
             var categoryEx = await _categoryRepository.ExistsNameAsync(createProductDTO.CategoryName);
             if (!categoryEx)
             {
-                Log.Error($"La categoría '{createProductDTO.CategoryName}' no existe.");
-                throw new Exception("La categoría especificada no existe: " + createProductDTO.CategoryName);
+                var newCategory = new TiendaUCN.Domain.Models.Product.Category
+                {
+                    Name = createProductDTO.CategoryName,
+                    Description = createProductDTO.CategoryName,
+                    IsActive = true,
+                    DeletedAt = false
+                };
+                await _categoryRepository.CreateCategoryAsync(newCategory);
             }
 
             var brandEx = await _brandRepository.ExistsNameAsync(createProductDTO.BrandName);
             if (!brandEx)
             {
-                Log.Error($"La marca '{createProductDTO.BrandName}' no existe.");
-                throw new Exception("La marca no existe: " + createProductDTO.BrandName);
+                var newBrand = new TiendaUCN.Domain.Models.Product.Brand
+                {
+                    Name = createProductDTO.BrandName,
+                    Description = createProductDTO.BrandName,
+                    IsActive = true,
+                    DeletedAt = false
+                };
+                await _brandRepository.CreateBrandAsync(newBrand);
             }
 
             var productEx = await _productRepository.ExistsNameAndBrandAsync(createProductDTO.Name, createProductDTO.BrandName);
             if (productEx)
             {
                 Log.Error("El producto de nombre y marca: {Name} - {Brand} ya existe", createProductDTO.Name, createProductDTO.BrandName);
-                throw new Exception($"El producto '{createProductDTO.Name}' de la marca '{createProductDTO.BrandName}' ya existe.");
+                throw new InvalidOperationException($"El producto '{createProductDTO.Name}' de la marca '{createProductDTO.BrandName}' ya existe.");
             }
 
-            // 2. Mapeo y asignación de IDs (EL FIX)
+            // 2. Mapeo y asignación de IDs
             var product = createProductDTO.Adapt<Product>();
 
-            // Obtenemos los IDs reales basados en los nombres enviados desde Postman
             var categoryId = await _categoryRepository.GetIdByNameAsync(createProductDTO.CategoryName);
             var brandId = await _brandRepository.GetIdByNameAsync(createProductDTO.BrandName);
 
-            // ✅ ASIGNACIÓN CRÍTICA: Aquí es donde conectamos el producto con su categoría y marca
             product.CategoryId = categoryId;
             product.BrandId = brandId;
 
@@ -67,10 +77,10 @@ namespace TiendaUCN.Application.Services.Implements
             if (!created)
             {
                 Log.Error("Error al crear el producto {Name} en la base de datos", createProductDTO.Name);
-                throw new Exception("Error al crear el producto: " + createProductDTO.Name);
+                throw new InvalidOperationException("Error al crear el producto: " + createProductDTO.Name);
             }
 
-            // 4. Subida de imágenes a Cloudinary
+            // 4. Subida de imágenes a Cloudinary si fueron adjuntadas
             if (createProductDTO.ImagesFiles != null && createProductDTO.ImagesFiles.Any())
             {
                 foreach (var image in createProductDTO.ImagesFiles)
