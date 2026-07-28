@@ -174,10 +174,83 @@ namespace TiendaUCN.Application.Services.Implements
             return "Se cambio el estado a: " + status;
         }
 
-        public Task UpdateProductAsync(int id, UpdateProductDTO updateProductDTO)
+        public async Task UpdateProductAsync(int id, UpdateProductDTO updateProductDTO)
         {
-            // Este método está pendiente por implementar según tu código original
-            throw new NotImplementedException();
+            var product = await _productRepository.GetProductIdAdminAsync(id);
+            if (product == null || product.DeletedAt)
+            {
+                throw new KeyNotFoundException($"El producto con ID {id} no existe.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(updateProductDTO.Name))
+            {
+                product.Name = updateProductDTO.Name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(updateProductDTO.Description))
+            {
+                product.Description = updateProductDTO.Description;
+            }
+
+            if (updateProductDTO.Price.HasValue)
+            {
+                product.Price = updateProductDTO.Price.Value;
+            }
+
+            if (updateProductDTO.Stock.HasValue)
+            {
+                product.Stock = updateProductDTO.Stock.Value;
+            }
+
+            if (!string.IsNullOrWhiteSpace(updateProductDTO.CategoryName))
+            {
+                var categoryEx = await _categoryRepository.ExistsNameAsync(updateProductDTO.CategoryName);
+                if (!categoryEx)
+                {
+                    var newCategory = new TiendaUCN.Domain.Models.Product.Category
+                    {
+                        Name = updateProductDTO.CategoryName,
+                        Description = updateProductDTO.CategoryName,
+                        IsActive = true,
+                        DeletedAt = false
+                    };
+                    await _categoryRepository.CreateCategoryAsync(newCategory);
+                }
+                var categoryId = await _categoryRepository.GetIdByNameAsync(updateProductDTO.CategoryName);
+                product.CategoryId = categoryId;
+            }
+
+            if (!string.IsNullOrWhiteSpace(updateProductDTO.BrandName))
+            {
+                var brandEx = await _brandRepository.ExistsNameAsync(updateProductDTO.BrandName);
+                if (!brandEx)
+                {
+                    var newBrand = new TiendaUCN.Domain.Models.Product.Brand
+                    {
+                        Name = updateProductDTO.BrandName,
+                        Description = updateProductDTO.BrandName,
+                        IsActive = true,
+                        DeletedAt = false
+                    };
+                    await _brandRepository.CreateBrandAsync(newBrand);
+                }
+                var brandId = await _brandRepository.GetIdByNameAsync(updateProductDTO.BrandName);
+                product.BrandId = brandId;
+            }
+
+            var updated = await _productRepository.UpdateProductAsync(product);
+            if (!updated)
+            {
+                throw new InvalidOperationException("No se pudo actualizar el producto en la base de datos.");
+            }
+
+            if (updateProductDTO.ImagesFiles != null && updateProductDTO.ImagesFiles.Count > 0)
+            {
+                foreach (var file in updateProductDTO.ImagesFiles)
+                {
+                    await _imageService.UploadImageAsync(file, product.Id);
+                }
+            }
         }
     }
 }

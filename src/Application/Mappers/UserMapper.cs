@@ -17,6 +17,7 @@ namespace TiendaUCN.src.Application.Mappers
                 .Map(dest => dest.EmailConfirmed, src => false)
                 .Map(dest => dest.PasswordHash, src => BCrypt.Net.BCrypt.HashPassword(src.Password))
                 .Map(dest => dest.RoleId, src => 2)
+                .Map(dest => dest.DateOfBirth, src => src.BirthDate)
                 .Map(dest => dest.IsDeleted, src => false);
         }
     }

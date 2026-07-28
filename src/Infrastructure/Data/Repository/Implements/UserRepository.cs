@@ -29,7 +29,9 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
 
         public async Task<bool> ExistsByEmailAsync(string email)
         {
-            return await _context.Users.AnyAsync(u => u.Email == email);
+            if (string.IsNullOrWhiteSpace(email)) return false;
+            var normalizedEmail = email.Trim().ToLower();
+            return await _context.Users.AnyAsync(u => u.Email.ToLower() == normalizedEmail);
         }
 
         public async Task<bool> ExistsByRutAsync(string rut)
@@ -44,9 +46,11 @@ namespace TiendaUCN.src.Infrastructure.Data.Repository.Implements
 
         public async Task<User?> GetByEmailAsync(string email)
         {
+            if (string.IsNullOrWhiteSpace(email)) return null;
+            var normalizedEmail = email.Trim().ToLower();
             return await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail);
         }
 
         public async Task<User?> GetByIdAsync(int id)

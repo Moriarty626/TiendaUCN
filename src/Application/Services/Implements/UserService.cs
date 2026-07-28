@@ -30,6 +30,9 @@ namespace TiendaUCN.Application.Services.Implements
 
         public async Task<string> RegisterAsync(RegisterDTO registerDTO)
         {
+            registerDTO.Email = registerDTO.Email.Trim().ToLower();
+            registerDTO.Name = registerDTO.Name.Trim();
+
             if (await _userRepository.ExistsByNameAsync(registerDTO.Name))
             {
                 Log.Warning("El usuario con el nombre {Name} ya está registrado.", registerDTO.Name);
@@ -52,6 +55,7 @@ namespace TiendaUCN.Application.Services.Implements
             }
 
             var user = registerDTO.Adapt<User>();
+            user.Email = registerDTO.Email;
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
             await _userRepository.CreateAsync(user);
 
@@ -63,44 +67,48 @@ namespace TiendaUCN.Application.Services.Implements
 
         public async Task<string> EmailVerificationAsync(EmailVerificationDTO emailVerificationDTO)
         {
-            var user = await _userRepository.GetByEmailAsync(emailVerificationDTO.Email)
+            var normalizedEmail = emailVerificationDTO.Email?.Trim().ToLower() ?? "";
+            var normalizedCode = emailVerificationDTO.VerificationCode?.Trim() ?? "";
+
+            var user = await _userRepository.GetByEmailAsync(normalizedEmail)
                 ?? throw new KeyNotFoundException("No se encontró un usuario con ese correo electrónico.");
 
             if (user.EmailConfirmed)
             {
-                Log.Information("El correo {Email} ya fue verificado.", emailVerificationDTO.Email);
+                Log.Information("El correo {Email} ya fue verificado.", normalizedEmail);
                 return "El correo ya ha sido verificado.";
             }
 
             if (user.VerificationCodeExpiry < DateTime.UtcNow)
             {
                 await GenerateAndSendVerificationCodeAsync(user.Id, user.Email);
-                Log.Warning("Código expirado para {Email}. Se envió uno nuevo.", emailVerificationDTO.Email);
+                Log.Warning("Código expirado para {Email}. Se envió uno nuevo.", normalizedEmail);
                 throw new InvalidOperationException("El código de verificación ha expirado. Se ha enviado un nuevo código a tu correo.");
             }
 
-            if (user.VerificationCode != emailVerificationDTO.VerificationCode)
+            if (user.VerificationCode?.Trim() != normalizedCode)
             {
-                Log.Warning("Código incorrecto para {Email}.", emailVerificationDTO.Email);
+                Log.Warning("Código incorrecto para {Email}.", normalizedEmail);
                 throw new ArgumentException("El código de verificación es incorrecto.");
             }
 
             bool isVerified = await _userRepository.MarkEmailAsConfirmedAsync(user.Id);
             if (!isVerified)
             {
-                Log.Error("Error al confirmar el correo para {Email}.", emailVerificationDTO.Email);
+                Log.Error("Error al confirmar el correo para {Email}.", normalizedEmail);
                 throw new Exception("Error al verificar el correo electrónico. Por favor, inténtalo de nuevo.");
             }
 
             await _emailService.SendWelcomeEmailAsync(user.Email);
-            Log.Information("Correo verificado exitosamente para {Email}.", emailVerificationDTO.Email);
+            Log.Information("Correo verificado exitosamente para {Email}.", normalizedEmail);
 
             return "Correo verificado exitosamente. ¡Bienvenido a TiendaUCN!";
         }
 
         public async Task<string> LoginAsync(LoginDTO loginDTO)
         {
-            User user = await _userRepository.GetByEmailAsync(loginDTO.Email)
+            var normalizedEmail = loginDTO.Email?.Trim().ToLower() ?? "";
+            User user = await _userRepository.GetByEmailAsync(normalizedEmail)
                 ?? throw new KeyNotFoundException("Credenciales inválidas.");
 
             if (user.IsDeleted)
@@ -112,13 +120,13 @@ namespace TiendaUCN.Application.Services.Implements
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.PasswordHash);
             if (!isPasswordValid)
             {
-                Log.Warning("Contraseña incorrecta para el usuario {Email}.", loginDTO.Email);
+                Log.Warning("Contraseña incorrecta para el usuario {Email}.", normalizedEmail);
                 throw new UnauthorizedAccessException("Credenciales inválidas.");
             }
 
             var token = _tokenService.GenerateAccessTokenAsync(user, user.Role.Name);
 
-            Log.Information("Inicio de sesión exitoso para el usuario {Email}.", loginDTO.Email);
+            Log.Information("Inicio de sesión exitoso para el usuario {Email}.", normalizedEmail);
             return token;
         }
 
@@ -138,7 +146,8 @@ namespace TiendaUCN.Application.Services.Implements
 
         public async Task<string> ResendVerificationCodeAsync(ResendVerificationCodeDTO resendVerificationCodeDTO)
         {
-            var user = await _userRepository.GetByEmailAsync(resendVerificationCodeDTO.Email)
+            var normalizedEmail = resendVerificationCodeDTO.Email?.Trim().ToLower() ?? "";
+            var user = await _userRepository.GetByEmailAsync(normalizedEmail)
                 ?? throw new KeyNotFoundException("No se encontró un usuario con ese correo electrónico.");
 
             if (user.EmailConfirmed)
@@ -146,7 +155,7 @@ namespace TiendaUCN.Application.Services.Implements
 
             await GenerateAndSendVerificationCodeAsync(user.Id, user.Email);
 
-            Log.Information("Código de verificación reenviado a {Email}.", resendVerificationCodeDTO.Email);
+            Log.Information("Código de verificación reenviado a {Email}.", normalizedEmail);
             return "Código de verificación reenviado exitosamente.";
         }
 

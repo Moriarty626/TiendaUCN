@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using TiendaUCN.Domain.Models.Product;
@@ -137,7 +137,7 @@ namespace TiendaUCN.src.Infrastructure.Data
                     var brandIds = await context.Brands.Select(b => b.Id).ToListAsync();
 
                     var imageFaker = new Faker<Image>()
-                        .RuleFor(i => i.ImageUrl, f => f.Image.PicsumUrl())
+                        .RuleFor(i => i.ImageUrl, f => $"https://picsum.photos/seed/{f.Random.Guid()}/640/480")
                         .RuleFor(i => i.PublicId, f => f.Random.Guid().ToString());
 
                     var productFaker = new Faker<Product>()
@@ -154,6 +154,18 @@ namespace TiendaUCN.src.Infrastructure.Data
                     await context.Products.AddRangeAsync(products);
                     await context.SaveChangesAsync();
                     Log.Information("Productos creados con exito");
+                }
+
+                // Reparación de URLs de imágenes antiguas en formato de picsum obsoleto (?image=)
+                var legacyImages = await context.Images.Where(i => i.ImageUrl.Contains("?image=")).ToListAsync();
+                if (legacyImages.Count > 0)
+                {
+                    foreach (var img in legacyImages)
+                    {
+                        img.ImageUrl = $"https://picsum.photos/seed/{Guid.NewGuid()}/640/480";
+                    }
+                    await context.SaveChangesAsync();
+                    Log.Information("Se actualizaron {Count} imágenes con URLs obsoletas a URLs válidas de Picsum.", legacyImages.Count);
                 }
             }
             catch (Exception ex)

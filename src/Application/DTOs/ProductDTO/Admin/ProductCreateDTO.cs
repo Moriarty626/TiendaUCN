@@ -5,12 +5,12 @@ namespace TiendaUCN.src.Application.DTOs.ProductDTO.Admin
     public class ProductCreateDTO
     {
         [Required(ErrorMessage = "El nombre del producto es obligatorio.")]
-        [StringLength(20, ErrorMessage = "El nombre no puede exceder los 20 caracteres.")]
+        [StringLength(100, ErrorMessage = "El nombre no puede exceder los 100 caracteres.")]
         [MinLength(3, ErrorMessage = "El nombre debe tener al menos 3 caracteres.")]
         public required string Name { get; set; }
 
         [Required(ErrorMessage = "La descripción del producto es obligatoria.")]
-        [StringLength(100, ErrorMessage = "La descripción no puede exceder los 100 caracteres.")]
+        [StringLength(1000, ErrorMessage = "La descripción no puede exceder los 1000 caracteres.")]
         [MinLength(10, ErrorMessage = "La descripción debe tener al menos 10 caracteres.")]
         public required string Description { get; set; }
 
@@ -23,12 +23,12 @@ namespace TiendaUCN.src.Application.DTOs.ProductDTO.Admin
         public required int Stock { get; set; }
 
         [Required(ErrorMessage = "El nombre de la categoría es obligatorio.")]
-        [StringLength(25, ErrorMessage = "El nombre de la categoría no puede exceder los 25 caracteres.")]
+        [StringLength(100, ErrorMessage = "El nombre de la categoría no puede exceder los 100 caracteres.")]
         [MinLength(3, ErrorMessage = "El nombre de la categoría debe tener al menos 3 caracteres.")]
         public required string CategoryName { get; set; }
 
         [Required(ErrorMessage = "El nombre de la marca es obligatorio.")]
-        [StringLength(25, ErrorMessage = "El nombre de la marca no puede exceder los 25 caracteres.")]
+        [StringLength(100, ErrorMessage = "El nombre de la marca no puede exceder los 100 caracteres.")]
         [MinLength(3, ErrorMessage = "El nombre de la marca debe tener al menos 3 caracteres.")]
         public required string BrandName { get; set; }
 
